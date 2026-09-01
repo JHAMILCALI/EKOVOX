@@ -1,5 +1,3 @@
-import { useState, useRef } from 'react'
-
 export default function Hero({
   onOpenPilotForm,
   onOpenAllyForm,
@@ -7,57 +5,21 @@ export default function Hero({
   onOpenPilotForm: () => void
   onOpenAllyForm: () => void
 }) {
-  const [isPlaying, setIsPlaying] = useState(true)
-  const videoRef = useRef<HTMLVideoElement>(null)
-
-  const togglePlay = async () => {
-    const video = videoRef.current
-    if (!video) return
-
-    if (video.paused) {
-      await video.play().catch(() => setIsPlaying(false))
-    } else {
-      video.pause()
-    }
-  }
-
   return (
     <section className="hero" id="hero">
       {/* Full-screen product video background */}
       <div className="hero__bg" aria-hidden="true">
         <video
-          ref={videoRef}
-          src="/video/Animación_estación_reciclaje_EKOVOX_202609011618.mp4"
+          src="/video/video ekovox.mp4"
           autoPlay
           loop
           muted
           playsInline
           preload="auto"
-          onPlay={() => setIsPlaying(true)}
-          onPause={() => setIsPlaying(false)}
           className="hero__background-video"
         />
         <div className="hero__gradient" />
       </div>
-
-      <button
-        type="button"
-        className="hero__background-control"
-        onClick={togglePlay}
-        aria-label={isPlaying ? 'Pausar video de fondo' : 'Reproducir video de fondo'}
-      >
-        {isPlaying ? (
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" aria-hidden="true">
-            <rect x="6" y="4" width="4" height="16" rx="1" />
-            <rect x="14" y="4" width="4" height="16" rx="1" />
-          </svg>
-        ) : (
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-            <path d="M8 5v14l11-7z" />
-          </svg>
-        )}
-        <span>{isPlaying ? 'Pausar' : 'Reproducir'}</span>
-      </button>
 
       <div className="hero__container">
         {/* Main foreground content */}

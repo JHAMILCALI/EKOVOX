@@ -22,17 +22,12 @@ export default function Navbar({ onOpenPilotForm }: { onOpenPilotForm: () => voi
     <header className={`navbar ${scrolled ? 'navbar--scrolled' : ''}`}>
       <nav className="navbar__inner">
         {/* Logo */}
-        <a href="#" className="navbar__logo" aria-label="EXOVOX inicio">
-          <svg width="150" height="36" viewBox="0 0 150 36" fill="none" aria-hidden="true">
-            {/* Mountain / Sun Logo icon */}
-            <path d="M4 22L11 11L18 22H4Z" fill="#5DAE32" />
-            <path d="M12 22L19 9L26 22H12Z" fill="#9ACD32" />
-            <circle cx="21" cy="8" r="3.5" fill="#F7C62F" />
-            <path d="M2 25C8 23.5 14 26.5 20 25C23 24.2 26 24.5 28 25" stroke="#13A3A1" strokeWidth="2.5" strokeLinecap="round" />
-            <text x="34" y="25" fontFamily="Outfit, sans-serif" fontWeight="800" fontSize="22" fill="#FFFFFF">
-              EXO<tspan fill="#9ACD32">VOX</tspan>
-            </text>
-          </svg>
+        <a href="#" className="navbar__logo" aria-label="EKOVOX inicio">
+          <img
+            src="/img/logo%20ekovox.png"
+            alt="EKOVOX"
+            className="navbar__logo-image"
+          />
         </a>
 
         {/* Desktop Links */}
