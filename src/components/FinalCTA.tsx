@@ -1,4 +1,6 @@
-export default function FinalCTA({ onOpenPilotForm, onOpenAllyForm }: { onOpenPilotForm: () => void; onOpenAllyForm: () => void }) {
+import { Link } from 'react-router-dom'
+
+export default function FinalCTA({ onOpenAllyForm }: { onOpenAllyForm: () => void }) {
   return (
     <section className="final-cta">
       <div className="final-cta__bg">
@@ -12,9 +14,9 @@ export default function FinalCTA({ onOpenPilotForm, onOpenAllyForm }: { onOpenPi
           con beneficios para La Paz.
         </p>
         <div className="final-cta__actions">
-          <button type="button" className="btn btn-primary" onClick={onOpenPilotForm}>
-            Quiero participar
-          </button>
+          <Link to="/demo" className="btn btn-primary">
+            Probar demo
+          </Link>
           <button type="button" className="btn btn-secondary" onClick={onOpenAllyForm}>
             Quiero ser aliado
           </button>

@@ -1,4 +1,6 @@
-export default function AppPreview({ onOpenPilotForm }: { onOpenPilotForm: () => void }) {
+import { Link } from 'react-router-dom'
+
+export default function AppPreview() {
   const benefits = [
     { icon: '📍', text: 'Encuentra estaciones activas' },
     { icon: '⚡', text: 'Acumula puntos en tiempo real' },
@@ -105,13 +107,12 @@ export default function AppPreview({ onOpenPilotForm }: { onOpenPilotForm: () =>
               ))}
             </ul>
 
-            <button
-              type="button"
+            <Link
+              to="/demo"
               className="btn btn-primary"
-              onClick={onOpenPilotForm}
             >
-              Avísame cuando esté disponible
-            </button>
+              Probar demo de la app
+            </Link>
           </div>
         </div>
       </div>

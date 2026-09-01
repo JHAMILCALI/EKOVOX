@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
+import { Link } from 'react-router-dom'
 
-export default function Navbar({ onOpenPilotForm }: { onOpenPilotForm: () => void }) {
+export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
 
@@ -40,13 +41,12 @@ export default function Navbar({ onOpenPilotForm }: { onOpenPilotForm: () => voi
         </ul>
 
         {/* CTA */}
-        <button
-          type="button"
+        <Link
+          to="/demo"
           className="btn btn-primary navbar__cta"
-          onClick={onOpenPilotForm}
         >
-          Quiero participar
-        </button>
+          Probar demo
+        </Link>
 
         {/* Mobile hamburger */}
         <button
@@ -71,14 +71,14 @@ export default function Navbar({ onOpenPilotForm }: { onOpenPilotForm: () => voi
             </li>
           ))}
         </ul>
-        <button
-          type="button"
+        <Link
+          to="/demo"
           className="btn btn-primary"
-          style={{ width: '100%', marginTop: '12px' }}
-          onClick={() => { setMenuOpen(false); onOpenPilotForm(); }}
+          style={{ width: '100%', marginTop: '12px', textAlign: 'center' }}
+          onClick={() => setMenuOpen(false)}
         >
-          Quiero participar
-        </button>
+          Probar demo
+        </Link>
       </div>
     </header>
   )

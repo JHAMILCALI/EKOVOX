@@ -1,4 +1,3 @@
-import { useState } from 'react'
 import './App.css'
 
 import Navbar from './components/Navbar'
@@ -14,11 +13,8 @@ import CircularChain from './components/CircularChain'
 import FAQ from './components/FAQ'
 import FinalCTA from './components/FinalCTA'
 import Footer from './components/Footer'
-import PilotForm from './components/PilotForm'
 
 function App() {
-  const [pilotFormOpen, setPilotFormOpen] = useState(false)
-
   const scrollToBusinessForm = () => {
     const el = document.getElementById('empresas')
     el?.scrollIntoView({ behavior: 'smooth' })
@@ -26,10 +22,9 @@ function App() {
 
   return (
     <>
-      <Navbar onOpenPilotForm={() => setPilotFormOpen(true)} />
+      <Navbar />
       <main>
         <Hero
-          onOpenPilotForm={() => setPilotFormOpen(true)}
           onOpenAllyForm={scrollToBusinessForm}
         />
         <HowItWorks />
@@ -37,20 +32,15 @@ function App() {
         <Benefits />
         <LocationPreview />
         <Impact />
-        <AppPreview onOpenPilotForm={() => setPilotFormOpen(true)} />
+        <AppPreview />
         <ForBusiness />
         <CircularChain />
         <FAQ />
         <FinalCTA
-          onOpenPilotForm={() => setPilotFormOpen(true)}
           onOpenAllyForm={scrollToBusinessForm}
         />
       </main>
       <Footer />
-      <PilotForm
-        open={pilotFormOpen}
-        onClose={() => setPilotFormOpen(false)}
-      />
     </>
   )
 }

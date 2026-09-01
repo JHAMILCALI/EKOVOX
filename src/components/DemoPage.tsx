@@ -1,0 +1,1052 @@
+import { useState, useEffect, useCallback, useRef } from 'react'
+import { Link } from 'react-router-dom'
+import './DemoPage.css'
+
+/* ─── Types ─────────────────────────────────────── */
+type Screen =
+  | 'splash' | 'onboarding' | 'auth' | 'auth-code' | 'auth-profile'
+  | 'home' | 'locations' | 'points' | 'profile'
+  | 'station-detail' | 'scanner' | 'session' | 'session-summary'
+  | 'reward-detail' | 'coupons' | 'impact' | 'history'
+  | 'preferences' | 'privacy' | 'notifications'
+
+interface Station {
+  id: number
+  name: string
+  address: string
+  distance: string
+  status: 'available' | 'almost-full' | 'offline' | 'closed'
+  statusText: string
+  host: string
+  hours: string
+  material: string
+  accessibility: string
+  lastUpdate: string
+}
+
+interface Reward {
+  id: number
+  icon: string
+  name: string
+  partner: string
+  cost: number
+  stock: string
+  stockColor: string
+  validity: string
+  description: string
+}
+
+interface DepositEvent {
+  type: 'idle' | 'validating' | 'accepted' | 'rejected'
+  message: string
+  points?: number
+}
+
+/* ─── Mock Data ─────────────────────────────────── */
+const STATIONS: Station[] = [
+  { id: 1, name: 'VoxStation Campus UMSA', address: 'Av. Villazón, Monoblock Central', distance: '350m', status: 'available', statusText: 'Disponible', host: 'Universidad Mayor de San Andrés', hours: 'Lun-Sáb 8:00-20:00', material: 'Botellas PET vacías sin aplastar', accessibility: 'Acceso en planta baja', lastUpdate: 'Hace 5 min' },
+  { id: 2, name: 'VoxStation Megacenter', address: 'Av. Rafael Pabón, Irpavi', distance: '1.2km', status: 'available', statusText: 'Disponible', host: 'Megacenter La Paz', hours: 'Lun-Dom 10:00-22:00', material: 'Botellas PET vacías sin aplastar', accessibility: 'Acceso con rampa', lastUpdate: 'Hace 3 min' },
+  { id: 3, name: 'VoxStation Plaza Avaroa', address: 'C. Rosendo Gutiérrez, Sopocachi', distance: '2.1km', status: 'almost-full', statusText: 'Casi llena', host: 'Alcaldía de La Paz', hours: 'Lun-Vie 7:00-19:00', material: 'Botellas PET vacías sin aplastar', accessibility: 'Acceso libre', lastUpdate: 'Hace 12 min' },
+  { id: 4, name: 'VoxStation Sopocachi', address: 'Av. 6 de Agosto #2450', distance: '3.4km', status: 'offline', statusText: 'Fuera de servicio', host: 'Café Typica', hours: 'Lun-Sáb 9:00-21:00', material: 'Botellas PET vacías sin aplastar', accessibility: 'Acceso en planta baja', lastUpdate: 'Hace 2 horas' },
+  { id: 5, name: 'VoxStation San Miguel', address: 'C. 21, Calacoto', distance: '5.8km', status: 'closed', statusText: 'Cerrada por horario', host: 'Centro Comercial San Miguel', hours: 'Lun-Sáb 8:00-20:00', material: 'Botellas PET vacías sin aplastar', accessibility: 'Nivel subsuelo con ascensor', lastUpdate: 'Hace 1 hora' },
+]
+
+const REWARDS: Reward[] = [
+  { id: 1, icon: '☕', name: 'Café gratis', partner: 'La Paz Coffee', cost: 80, stock: 'Disponible', stockColor: '#7DBD35', validity: 'Hasta 30/09', description: 'Un café americano o latte de tamaño regular en cualquier sucursal de La Paz Coffee.' },
+  { id: 2, icon: '🎬', name: '2x1 Cine', partner: 'Multicine', cost: 120, stock: 'Disponible', stockColor: '#7DBD35', validity: 'Hasta 15/10', description: 'Dos entradas por el precio de una en cualquier función regular de lunes a jueves.' },
+  { id: 3, icon: '🛒', name: 'Bs 10 descuento', partner: 'Supermercado Ketal', cost: 150, stock: 'Poco stock', stockColor: '#F7C62F', validity: 'Hasta 30/09', description: 'Descuento de Bs 10 en compras mayores a Bs 50 en cualquier sucursal Ketal.' },
+  { id: 4, icon: '📱', name: 'Recarga Bs 5', partner: 'Tigo', cost: 50, stock: 'Disponible', stockColor: '#7DBD35', validity: 'Hasta 31/10', description: 'Recarga de Bs 5 de saldo para tu línea Tigo. Se aplica en 24 horas.' },
+  { id: 5, icon: '🍕', name: 'Pizza personal', partner: 'Pizza Hut', cost: 200, stock: 'No elegible', stockColor: '#ff6b6b', validity: 'Hasta 30/09', description: 'Una pizza personal de un ingrediente en cualquier sucursal Pizza Hut La Paz.' },
+  { id: 6, icon: '🎟️', name: 'Entrada museo', partner: 'Museo Nacional', cost: 60, stock: 'Próximamente', stockColor: '#7c84a3', validity: 'Por confirmar', description: 'Entrada general al Museo Nacional de Arte, válida cualquier día de la semana.' },
+]
+
+const ONBOARDING_SLIDES = [
+  { icon: '♻️', title: 'Recicla botellas PET', desc: 'Deposita tus botellas vacías en una VoxStation cerca de ti y contribuye al reciclaje en La Paz.' },
+  { icon: '📱', title: 'Escanea una VoxStation', desc: 'Abre la app, escanea el QR de la estación y comienza a depositar envases uno a uno.' },
+  { icon: '⭐', title: 'Suma puntos y canjea', desc: 'Cada botella aceptada suma VoxPuntos que puedes canjear por beneficios de empresas aliadas.' },
+  { icon: '🌍', title: 'Sigue tu impacto', desc: 'Conoce cuántos envases has reciclado, el peso recuperado y el destino del material.' },
+]
+
+/* ─── Icons (inline SVG) ────────────────────────── */
+const IconHome = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+const IconMap = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+const IconStar = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M6 12h12"/></svg>
+const IconUser = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+const IconQR = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><path d="M21 14h-3v3h3"/><path d="M18 20h3v-3"/></svg>
+const IconBack = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+const IconBell = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+const IconChevron = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+const IconSearch = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+
+/* ─── Component ─────────────────────────────────── */
+export default function DemoPage() {
+  // Navigation state
+  const [screen, setScreen] = useState<Screen>('splash')
+  const [, setScreenStack] = useState<Screen[]>([])
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  // App state
+  const [points, setPoints] = useState(150)
+  const [totalDeposits, setTotalDeposits] = useState(20)
+  const [onboardingPage, setOnboardingPage] = useState(0)
+  const [authMode, setAuthMode] = useState<'phone' | 'email'>('phone')
+  const [authStep, setAuthStep] = useState<'input' | 'code' | 'profile'>('input')
+  const [locationView, setLocationView] = useState<'map' | 'list'>('list')
+  const [pointsTab, setPointsTab] = useState<'movements' | 'rewards'>('movements')
+  const [selectedStation, setSelectedStation] = useState<Station | null>(null)
+  const [selectedReward, setSelectedReward] = useState<Reward | null>(null)
+  const [couponsTab, setCouponsTab] = useState<'available' | 'used' | 'expired'>('available')
+
+  // Session state
+  const [sessionTime, setSessionTime] = useState(0)
+  const [sessionAccepted, setSessionAccepted] = useState(0)
+  const [sessionRejected, setSessionRejected] = useState(0)
+  const [sessionPoints, setSessionPoints] = useState(0)
+  const [sessionEvents, setSessionEvents] = useState<DepositEvent[]>([])
+  const [, setSessionDepositIndex] = useState(0)
+
+  // UI state
+  const [toast, setToast] = useState('')
+  const [showConfirm, setShowConfirm] = useState(false)
+  const [confirmAction, setConfirmAction] = useState<(() => void) | null>(null)
+  const [confirmText, setConfirmText] = useState({ title: '', desc: '' })
+  const [showQR, setShowQR] = useState(false)
+  const [activeFilters, setActiveFilters] = useState<string[]>(['Disponible'])
+  const [movementFilter, setMovementFilter] = useState('Todos')
+
+  // Preferences
+  const [prefTransactional, setPrefTransactional] = useState(true)
+  const [prefOperative, setPrefOperative] = useState(true)
+  const [prefRewards, setPrefRewards] = useState(true)
+  const [prefMarketing, setPrefMarketing] = useState(false)
+
+  // Refs
+  const sessionTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const depositTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const touchStartX = useRef(0)
+
+  // ─── Navigation helpers ──────────────────────────
+  const pushScreen = useCallback((s: Screen) => {
+    setScreenStack(prev => [...prev, screen])
+    setScreen(s)
+  }, [screen])
+
+  const popScreen = useCallback(() => {
+    setScreenStack(prev => {
+      const newStack = [...prev]
+      const last = newStack.pop()
+      if (last) setScreen(last)
+      return newStack
+    })
+  }, [])
+
+  const goToTab = useCallback((s: Screen) => {
+    setScreenStack([])
+    setScreen(s)
+  }, [])
+
+  // ─── Splash auto-transition ──────────────────────
+  useEffect(() => {
+    if (screen === 'splash') {
+      const t = setTimeout(() => setScreen('onboarding'), 2000)
+      return () => clearTimeout(t)
+    }
+  }, [screen])
+
+  // ─── Toast helper ────────────────────────────────
+  const showToast = useCallback((msg: string) => {
+    setToast(msg)
+    setTimeout(() => setToast(''), 3000)
+  }, [])
+
+  // ─── Session timer ───────────────────────────────
+  useEffect(() => {
+    if (screen === 'session') {
+      setSessionTime(0)
+      setSessionAccepted(0)
+      setSessionRejected(0)
+      setSessionPoints(0)
+      setSessionEvents([{ type: 'idle', message: 'Acerca una botella' }])
+      setSessionDepositIndex(0)
+
+      sessionTimerRef.current = setInterval(() => {
+        setSessionTime(t => t + 1)
+      }, 1000)
+
+      return () => {
+        if (sessionTimerRef.current) clearInterval(sessionTimerRef.current)
+      }
+    }
+  }, [screen])
+
+  // ─── Auto-simulate deposits ──────────────────────
+  useEffect(() => {
+    if (screen !== 'session') return
+
+    const DEPOSITS = [
+      { delay: 3000, validateTime: 1500, result: 'accepted' as const, msg: 'Botella aceptada: +15 puntos', pts: 15 },
+      { delay: 4000, validateTime: 1500, result: 'accepted' as const, msg: 'Botella aceptada: +15 puntos', pts: 15 },
+      { delay: 4000, validateTime: 1500, result: 'rejected' as const, msg: 'La botella todavía tiene líquido', pts: 0 },
+      { delay: 4000, validateTime: 1500, result: 'accepted' as const, msg: 'Botella aceptada: +15 puntos', pts: 15 },
+    ]
+
+    let currentIndex = 0
+    let cancelled = false
+
+    const runDeposit = () => {
+      if (cancelled || currentIndex >= DEPOSITS.length) return
+      const deposit = DEPOSITS[currentIndex]
+
+      depositTimerRef.current = setTimeout(() => {
+        if (cancelled) return
+        // Validating
+        setSessionEvents(prev => [...prev, { type: 'validating', message: 'Validando...' }])
+
+        depositTimerRef.current = setTimeout(() => {
+          if (cancelled) return
+          // Result
+          setSessionEvents(prev => {
+            const newEvents = prev.filter(e => e.type !== 'validating')
+            return [...newEvents, { type: deposit.result, message: deposit.msg, points: deposit.pts }]
+          })
+
+          if (deposit.result === 'accepted') {
+            setSessionAccepted(a => a + 1)
+            setSessionPoints(p => p + deposit.pts)
+          } else {
+            setSessionRejected(r => r + 1)
+          }
+
+          currentIndex++
+          if (currentIndex < DEPOSITS.length) {
+            runDeposit()
+          }
+        }, deposit.validateTime)
+      }, deposit.delay)
+    }
+
+    runDeposit()
+
+    return () => {
+      cancelled = true
+      if (depositTimerRef.current) clearTimeout(depositTimerRef.current)
+    }
+  }, [screen])
+
+  const endSession = useCallback(() => {
+    if (sessionTimerRef.current) clearInterval(sessionTimerRef.current)
+    if (depositTimerRef.current) clearTimeout(depositTimerRef.current)
+    setPoints(p => p + sessionPoints)
+    setTotalDeposits(d => d + sessionAccepted)
+    setScreen('session-summary')
+    setScreenStack([])
+  }, [sessionPoints, sessionAccepted])
+
+  const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`
+
+  // ─── Onboarding swipe ───────────────────────────
+  const onTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX }
+  const onTouchEnd = (e: React.TouchEvent) => {
+    const diff = touchStartX.current - e.changedTouches[0].clientX
+    if (Math.abs(diff) > 50) {
+      if (diff > 0 && onboardingPage < 3) setOnboardingPage(p => p + 1)
+      if (diff < 0 && onboardingPage > 0) setOnboardingPage(p => p - 1)
+    }
+  }
+
+  // ─── Confirm modal ──────────────────────────────
+  const openConfirm = (title: string, desc: string, action: () => void) => {
+    setConfirmText({ title, desc })
+    setConfirmAction(() => action)
+    setShowConfirm(true)
+  }
+
+  // ─── Status helper ──────────────────────────────
+  const statusClass = (status: string) => {
+    switch (status) {
+      case 'available': return 'demo-status--available'
+      case 'almost-full': return 'demo-status--almost-full'
+      case 'offline': return 'demo-status--offline'
+      case 'closed': return 'demo-status--closed'
+      default: return ''
+    }
+  }
+
+  // ─── QR mock pattern ────────────────────────────
+  const qrPattern = [1,1,1,0,1,1,1,0, 1,0,1,0,0,1,0,1, 1,1,1,0,1,0,1,1, 0,0,0,0,1,0,0,0, 1,0,1,1,0,1,0,1, 1,0,0,0,1,1,1,0, 1,1,1,0,0,1,0,1, 0,0,0,1,1,0,1,1]
+
+  /* ═════════════════════════════════════════════════
+     RENDER SCREENS
+     ═════════════════════════════════════════════════ */
+
+  const renderScreen = () => {
+    switch (screen) {
+      // ─── SPLASH ────────────────────────────
+      case 'splash':
+        return (
+          <div className="demo-screen demo-splash">
+            <div className="demo-splash__logo">EXO<span>VOX</span></div>
+            <p className="demo-splash__tagline">Tu reciclaje tiene voz.</p>
+            <div className="demo-splash__spinner" />
+            <span className="demo-splash__version">v1.0.0-beta</span>
+          </div>
+        )
+
+      // ─── ONBOARDING ───────────────────────
+      case 'onboarding':
+        return (
+          <div className="demo-screen demo-onboarding" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
+            <button className="demo-onboarding__skip" onClick={() => { setScreen('auth'); setAuthStep('input') }}>
+              Omitir
+            </button>
+            <div className="demo-onboarding__slides" key={onboardingPage}>
+              <div className="demo-onboarding__icon">{ONBOARDING_SLIDES[onboardingPage].icon}</div>
+              <h2 className="demo-onboarding__title">{ONBOARDING_SLIDES[onboardingPage].title}</h2>
+              <p className="demo-onboarding__desc">{ONBOARDING_SLIDES[onboardingPage].desc}</p>
+            </div>
+            <div className="demo-onboarding__dots">
+              {ONBOARDING_SLIDES.map((_, i) => (
+                <div key={i} className={`demo-onboarding__dot ${i === onboardingPage ? 'demo-onboarding__dot--active' : ''}`} />
+              ))}
+            </div>
+            <button className="demo-onboarding__btn" onClick={() => {
+              if (onboardingPage < 3) setOnboardingPage(p => p + 1)
+              else { setScreen('auth'); setAuthStep('input') }
+            }}>
+              {onboardingPage < 3 ? 'Siguiente' : 'Comenzar'}
+            </button>
+          </div>
+        )
+
+      // ─── AUTH ──────────────────────────────
+      case 'auth':
+        return (
+          <div className="demo-screen demo-auth">
+            {authStep === 'input' && <>
+              <h2 className="demo-auth__title">Crear cuenta</h2>
+              <p className="demo-auth__subtitle">Ingresa tu teléfono o correo para empezar</p>
+              <div className="demo-auth__toggle">
+                <button className={`demo-auth__toggle-btn ${authMode === 'phone' ? 'demo-auth__toggle-btn--active' : ''}`} onClick={() => setAuthMode('phone')}>Teléfono</button>
+                <button className={`demo-auth__toggle-btn ${authMode === 'email' ? 'demo-auth__toggle-btn--active' : ''}`} onClick={() => setAuthMode('email')}>Correo</button>
+              </div>
+              <input className="demo-auth__input" placeholder={authMode === 'phone' ? '+591 7X XXX XXX' : 'tu@correo.com'} readOnly />
+              <button className="demo-auth__btn" onClick={() => setAuthStep('code')}>Enviar código</button>
+              <button className="demo-auth__skip" onClick={() => { setIsLoggedIn(false); goToTab('home') }}>Explorar sin cuenta</button>
+            </>}
+            {authStep === 'code' && <>
+              <h2 className="demo-auth__title">Código de verificación</h2>
+              <p className="demo-auth__subtitle">Ingresa el código enviado a tu {authMode === 'phone' ? 'teléfono' : 'correo'}</p>
+              <div className="demo-auth__code-wrap">
+                {['4','7','2','9','1','6'].map((d, i) => (
+                  <div key={i} className="demo-auth__code-digit">{d}</div>
+                ))}
+              </div>
+              <button className="demo-auth__btn" onClick={() => setAuthStep('profile')}>Verificar</button>
+            </>}
+            {authStep === 'profile' && <>
+              <h2 className="demo-auth__title">Completa tu perfil</h2>
+              <p className="demo-auth__subtitle">Solo necesitamos algunos datos básicos</p>
+              <label className="demo-auth__label">Nombre o alias</label>
+              <input className="demo-auth__input" defaultValue="Camila" readOnly />
+              <label className="demo-auth__label">Ciudad</label>
+              <select className="demo-auth__select demo-auth__input" defaultValue="lapaz">
+                <option value="lapaz">La Paz</option>
+                <option value="cbba">Cochabamba</option>
+                <option value="scz">Santa Cruz</option>
+              </select>
+              <label className="demo-auth__label">Rango de edad</label>
+              <select className="demo-auth__select demo-auth__input" defaultValue="18-24">
+                <option value="18-24">18-24</option>
+                <option value="25-34">25-34</option>
+                <option value="35-44">35-44</option>
+                <option value="45+">45+</option>
+              </select>
+              <label className="demo-auth__check">
+                <input type="checkbox" defaultChecked readOnly />
+                Acepto los términos y condiciones y la política de privacidad de EXOVOX
+              </label>
+              <button className="demo-auth__btn" onClick={() => { setIsLoggedIn(true); goToTab('home') }}>Crear cuenta</button>
+            </>}
+          </div>
+        )
+
+      // ─── HOME ──────────────────────────────
+      case 'home':
+        return (
+          <div className="demo-screen demo-home">
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div>
+                <h1 className="demo-home__greeting">{isLoggedIn ? '¡Hola, Camila!' : '¡Hola, Visitante!'}</h1>
+                <p className="demo-home__date">1 septiembre, 2026</p>
+              </div>
+              <button className="demo-header__action" onClick={() => pushScreen('notifications')}>
+                <IconBell />
+              </button>
+            </div>
+
+            <div className="demo-balance-card">
+              <div className="demo-balance-card__label">VoxPuntos</div>
+              <div className="demo-balance-card__amount">{points}</div>
+              <div className="demo-balance-card__unit">puntos disponibles</div>
+            </div>
+
+            <button className="demo-scan-btn" onClick={() => pushScreen('scanner')}>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/></svg>
+              Escanear VoxStation
+            </button>
+
+            <div className="demo-section-label">Estación cercana</div>
+            <div className="demo-station-card" onClick={() => { setSelectedStation(STATIONS[0]); pushScreen('station-detail') }}>
+              <div className="demo-station-card__icon">📍</div>
+              <div className="demo-station-card__info">
+                <div className="demo-station-card__name">{STATIONS[0].name}</div>
+                <div className="demo-station-card__meta">{STATIONS[0].distance} · {STATIONS[0].address}</div>
+              </div>
+              <span className={`demo-station-card__status ${statusClass(STATIONS[0].status)}`}>{STATIONS[0].statusText}</span>
+            </div>
+
+            <div className="demo-challenge">
+              <div className="demo-challenge__tag">🎯 Reto activo</div>
+              <div className="demo-challenge__title">Reto Septiembre</div>
+              <div className="demo-challenge__desc">Recicla 20 botellas este mes</div>
+              <div className="demo-challenge__bar">
+                <div className="demo-challenge__bar-fill" style={{ width: `${Math.min((totalDeposits / 20) * 100, 100)}%` }} />
+              </div>
+              <div className="demo-challenge__progress">{Math.min(totalDeposits, 20)}/20</div>
+            </div>
+
+            <div className="demo-section-label">Actividad reciente</div>
+            {[
+              { icon: '♻️', name: 'Sesión de reciclaje', pts: '+45', time: 'Hace 2 días', earn: true },
+              { icon: '☕', name: 'Canje: Café gratis', pts: '-80', time: 'Hace 5 días', earn: false },
+              { icon: '♻️', name: 'Sesión de reciclaje', pts: '+30', time: 'Hace 1 semana', earn: true },
+            ].map((a, i) => (
+              <div key={i} className="demo-activity">
+                <div className={`demo-activity__icon ${a.earn ? 'demo-activity__icon--earn' : 'demo-activity__icon--spend'}`}>{a.icon}</div>
+                <div className="demo-activity__info">
+                  <div className="demo-activity__name">{a.name}</div>
+                  <div className="demo-activity__time">{a.time}</div>
+                </div>
+                <span className={`demo-activity__pts ${a.earn ? 'demo-activity__pts--pos' : 'demo-activity__pts--neg'}`}>{a.pts}</span>
+              </div>
+            ))}
+
+            <div style={{ marginTop: 16 }}>
+              <div className="demo-reward-card" onClick={() => { setSelectedReward(REWARDS[0]); pushScreen('reward-detail') }}>
+                <div className="demo-reward-card__icon">☕</div>
+                <div className="demo-reward-card__info">
+                  <div className="demo-reward-card__name">Recompensa destacada</div>
+                  <div className="demo-reward-card__partner">Café gratis · 80 pts</div>
+                </div>
+                <IconChevron />
+              </div>
+            </div>
+          </div>
+        )
+
+      // ─── LOCATIONS ─────────────────────────
+      case 'locations':
+        return (
+          <div className="demo-screen demo-locations">
+            <h1 className="demo-home__greeting" style={{ marginBottom: 16 }}>Ubicaciones</h1>
+
+            <div className="demo-locations__search-wrap">
+              <span className="demo-locations__search-icon"><IconSearch /></span>
+              <input className="demo-locations__search" placeholder="Buscar zona o lugar..." readOnly style={{ paddingLeft: 40 }} />
+            </div>
+
+            <div className="demo-locations__toggle">
+              <button className={`demo-locations__toggle-btn ${locationView === 'map' ? 'demo-locations__toggle-btn--active' : ''}`} onClick={() => setLocationView('map')}>🗺 Mapa</button>
+              <button className={`demo-locations__toggle-btn ${locationView === 'list' ? 'demo-locations__toggle-btn--active' : ''}`} onClick={() => setLocationView('list')}>📋 Lista</button>
+            </div>
+
+            <div className="demo-filters">
+              {['Disponible', 'Cerca', 'Abierto ahora'].map(f => (
+                <button key={f} className={`demo-filter-chip ${activeFilters.includes(f) ? 'demo-filter-chip--active' : ''}`}
+                  onClick={() => setActiveFilters(prev => prev.includes(f) ? prev.filter(x => x !== f) : [...prev, f])}>
+                  {f}
+                </button>
+              ))}
+            </div>
+
+            {locationView === 'map' ? (
+              <div className="demo-map">
+                <div className="demo-map__grid" />
+                <div className="demo-map__pin demo-map__pin--green" style={{ top: '25%', left: '35%' }} onClick={() => { setSelectedStation(STATIONS[0]); pushScreen('station-detail') }} />
+                <div className="demo-map__pin demo-map__pin--green" style={{ top: '45%', left: '65%' }} onClick={() => { setSelectedStation(STATIONS[1]); pushScreen('station-detail') }} />
+                <div className="demo-map__pin demo-map__pin--yellow" style={{ top: '35%', left: '50%' }} onClick={() => { setSelectedStation(STATIONS[2]); pushScreen('station-detail') }} />
+                <div className="demo-map__pin demo-map__pin--red" style={{ top: '60%', left: '40%' }} onClick={() => { setSelectedStation(STATIONS[3]); pushScreen('station-detail') }} />
+                <div className="demo-map__pin demo-map__pin--gray" style={{ top: '70%', left: '70%' }} onClick={() => { setSelectedStation(STATIONS[4]); pushScreen('station-detail') }} />
+              </div>
+            ) : null}
+
+            {(locationView === 'list' ? STATIONS : []).map(s => (
+              <div key={s.id} className="demo-station-card" onClick={() => { setSelectedStation(s); pushScreen('station-detail') }}>
+                <div className="demo-station-card__icon">📍</div>
+                <div className="demo-station-card__info">
+                  <div className="demo-station-card__name">{s.name}</div>
+                  <div className="demo-station-card__meta">{s.distance} · {s.address}</div>
+                </div>
+                <span className={`demo-station-card__status ${statusClass(s.status)}`}>{s.statusText}</span>
+              </div>
+            ))}
+          </div>
+        )
+
+      // ─── STATION DETAIL ────────────────────
+      case 'station-detail':
+        if (!selectedStation) return null
+        return (
+          <div className="demo-screen">
+            <div className="demo-header">
+              <button className="demo-header__back" onClick={popScreen}><IconBack /></button>
+              <span className="demo-header__title">{selectedStation.name}</span>
+            </div>
+            <div className="demo-detail">
+              <div className={`demo-detail__status ${statusClass(selectedStation.status)}`}>
+                <span style={{ width: 8, height: 8, borderRadius: '50%', background: 'currentColor' }} />
+                {selectedStation.statusText}
+              </div>
+              {[
+                { icon: '📍', label: 'Dirección', value: selectedStation.address },
+                { icon: '🏢', label: 'Anfitrión', value: selectedStation.host },
+                { icon: '🕐', label: 'Horario', value: selectedStation.hours },
+                { icon: '♻️', label: 'Material aceptado', value: selectedStation.material },
+                { icon: '♿', label: 'Accesibilidad', value: selectedStation.accessibility },
+                { icon: '🔄', label: 'Última actualización', value: selectedStation.lastUpdate },
+              ].map((r, i) => (
+                <div key={i} className="demo-detail__row">
+                  <span className="demo-detail__row-icon">{r.icon}</span>
+                  <div>
+                    <div className="demo-detail__row-label">{r.label}</div>
+                    <div className="demo-detail__row-value">{r.value}</div>
+                  </div>
+                </div>
+              ))}
+              <div className="demo-detail__actions">
+                <button className="demo-detail__nav-btn" onClick={() => showToast('Navegación no disponible en demo')}>🧭 Navegar</button>
+                <button className="demo-detail__report" onClick={() => showToast('Reporte enviado (demo)')}>Reportar</button>
+              </div>
+            </div>
+          </div>
+        )
+
+      // ─── SCANNER ───────────────────────────
+      case 'scanner':
+        return (
+          <div className="demo-screen demo-scanner">
+            <button className="demo-scanner__close" onClick={popScreen}>✕</button>
+            <div className="demo-scanner__frame">
+              <div className="demo-scanner__corner demo-scanner__corner--tl" />
+              <div className="demo-scanner__corner demo-scanner__corner--tr" />
+              <div className="demo-scanner__corner demo-scanner__corner--bl" />
+              <div className="demo-scanner__corner demo-scanner__corner--br" />
+              <div className="demo-scanner__line" />
+            </div>
+            <p className="demo-scanner__text">Escanea el QR de la VoxStation</p>
+            <p className="demo-scanner__subtext">No escanees el código de la botella</p>
+            <button className="demo-scanner__manual" onClick={() => {
+              setScreen('session')
+              setScreenStack([])
+            }}>Ingresar código manual</button>
+            <ScannerAutoConnect onConnect={() => { setScreen('session'); setScreenStack([]) }} />
+          </div>
+        )
+
+      // ─── SESSION ───────────────────────────
+      case 'session':
+        return (
+          <div className="demo-screen">
+            <div className="demo-header">
+              <span className="demo-header__title">Sesión de reciclaje</span>
+            </div>
+            <div className="demo-session">
+              <div className="demo-session__connected">
+                <div className="demo-session__pulse" />
+                <span className="demo-session__station">VoxStation Campus UMSA conectada</span>
+              </div>
+              <div className="demo-session__timer">{formatTime(sessionTime)}</div>
+              <div className="demo-session__stats">
+                <div className="demo-session__stat">
+                  <span className="demo-session__stat-val demo-session__stat-val--accepted">{sessionAccepted}</span>
+                  <span className="demo-session__stat-label">Aceptadas</span>
+                </div>
+                <div className="demo-session__stat">
+                  <span className="demo-session__stat-val demo-session__stat-val--rejected">{sessionRejected}</span>
+                  <span className="demo-session__stat-label">Rechazadas</span>
+                </div>
+                <div className="demo-session__stat">
+                  <span className="demo-session__stat-val demo-session__stat-val--points">+{sessionPoints}</span>
+                  <span className="demo-session__stat-label">Puntos</span>
+                </div>
+              </div>
+              <div className="demo-session__feed">
+                {sessionEvents.map((e, i) => (
+                  <div key={i} className={`demo-session__event demo-session__event--${e.type}`}>
+                    <span className="demo-session__event-icon">
+                      {e.type === 'idle' ? '🔄' : e.type === 'validating' ? '⏳' : e.type === 'accepted' ? '✅' : '❌'}
+                    </span>
+                    <span className="demo-session__event-text">{e.message}</span>
+                    {e.points ? <span className="demo-session__event-pts">+{e.points}</span> : null}
+                  </div>
+                ))}
+              </div>
+              <p className="demo-session__instruction">Deposita una botella a la vez</p>
+              <button className="demo-session__end-btn" onClick={endSession}>Terminar sesión</button>
+            </div>
+          </div>
+        )
+
+      // ─── SESSION SUMMARY ───────────────────
+      case 'session-summary':
+        return (
+          <div className="demo-screen">
+            <div className="demo-header">
+              <span className="demo-header__title">Resumen</span>
+            </div>
+            <div className="demo-summary">
+              <div className="demo-summary__check">✓</div>
+              <h2 className="demo-summary__title">¡Sesión completada!</h2>
+              <div className="demo-summary__stats">
+                <div className="demo-summary__stat">
+                  <span className="demo-summary__stat-val" style={{ color: 'var(--lime-500)' }}>{sessionAccepted}</span>
+                  <span className="demo-summary__stat-label">Aceptadas</span>
+                </div>
+                <div className="demo-summary__stat">
+                  <span className="demo-summary__stat-val" style={{ color: '#ff6b6b' }}>{sessionRejected}</span>
+                  <span className="demo-summary__stat-label">Rechazadas</span>
+                </div>
+                <div className="demo-summary__stat">
+                  <span className="demo-summary__stat-val" style={{ color: 'var(--yellow-500)' }}>+{sessionPoints}</span>
+                  <span className="demo-summary__stat-label">Puntos</span>
+                </div>
+              </div>
+              <div className="demo-summary__info">
+                {sessionRejected > 0 && <div className="demo-summary__info-row"><span>Rechazos</span><span>{sessionRejected} botella con líquido</span></div>}
+                <div className="demo-summary__info-row"><span>Nuevo saldo</span><span>{points} VoxPuntos</span></div>
+                <div className="demo-summary__info-row"><span>Impacto</span><span>~{sessionAccepted * 22}g de PET</span></div>
+                <div className="demo-summary__info-row"><span>Ubicación</span><span>VoxStation Campus UMSA</span></div>
+                <div className="demo-summary__info-row"><span>Hora</span><span>01/09/2026 · {new Date().toLocaleTimeString('es', { hour: '2-digit', minute: '2-digit' })}</span></div>
+              </div>
+              <div className="demo-summary__actions">
+                <button className="demo-onboarding__btn" onClick={() => goToTab('home')}>Volver al inicio</button>
+                <button className="demo-auth__skip" onClick={() => pushScreen('history')}>Ver historial</button>
+              </div>
+            </div>
+          </div>
+        )
+
+      // ─── POINTS ────────────────────────────
+      case 'points':
+        return (
+          <div className="demo-screen demo-points">
+            <h1 className="demo-home__greeting" style={{ textAlign: 'center', marginBottom: 16 }}>Puntos</h1>
+            <div className="demo-points__balance">
+              <div className="demo-points__amount">{points}</div>
+              <div className="demo-points__label">VoxPuntos</div>
+            </div>
+            <p className="demo-points__expiry">⏳ Próximo vencimiento: 45 puntos el 30/11</p>
+
+            <div className="demo-points__tabs">
+              <button className={`demo-points__tab ${pointsTab === 'movements' ? 'demo-points__tab--active' : ''}`} onClick={() => setPointsTab('movements')}>Movimientos</button>
+              <button className={`demo-points__tab ${pointsTab === 'rewards' ? 'demo-points__tab--active' : ''}`} onClick={() => setPointsTab('rewards')}>Recompensas</button>
+            </div>
+
+            {pointsTab === 'movements' && <>
+              <div className="demo-filters" style={{ marginBottom: 12 }}>
+                {['Todos', 'Ganados', 'Usados', 'Vencidos'].map(f => (
+                  <button key={f} className={`demo-filter-chip ${movementFilter === f ? 'demo-filter-chip--active' : ''}`} onClick={() => setMovementFilter(f)}>{f}</button>
+                ))}
+              </div>
+              {[
+                { icon: '♻️', desc: 'Sesión de reciclaje', date: '01/09', amount: '+45', earn: true },
+                { icon: '☕', desc: 'Café La Paz Coffee', date: '27/08', amount: '-80', earn: false },
+                { icon: '♻️', desc: 'Sesión de reciclaje', date: '25/08', amount: '+30', earn: true },
+                { icon: '🎁', desc: 'Bono primer depósito', date: '20/08', amount: '+15', earn: true },
+                { icon: '🛒', desc: 'Descuento supermercado', date: '18/08', amount: '-50', earn: false },
+              ].map((tx, i) => (
+                <div key={i} className="demo-tx">
+                  <div className="demo-tx__icon" style={{ background: tx.earn ? 'rgba(93,174,50,0.12)' : 'rgba(243,154,34,0.12)' }}>{tx.icon}</div>
+                  <div className="demo-tx__info">
+                    <div className="demo-tx__desc">{tx.desc}</div>
+                    <div className="demo-tx__date">{tx.date}</div>
+                  </div>
+                  <span className="demo-tx__amount" style={{ color: tx.earn ? 'var(--lime-500)' : 'var(--orange-500)' }}>{tx.amount}</span>
+                </div>
+              ))}
+              <button className="demo-auth__skip" style={{ marginTop: 8 }} onClick={() => pushScreen('coupons')}>Ver mis cupones →</button>
+            </>}
+
+            {pointsTab === 'rewards' && <>
+              {REWARDS.map(r => (
+                <div key={r.id} className="demo-reward-card" onClick={() => { setSelectedReward(r); pushScreen('reward-detail') }}>
+                  <div className="demo-reward-card__icon">{r.icon}</div>
+                  <div className="demo-reward-card__info">
+                    <div className="demo-reward-card__name">{r.name}</div>
+                    <div className="demo-reward-card__partner">{r.partner}</div>
+                  </div>
+                  <div>
+                    <div className="demo-reward-card__cost">{r.cost} pts</div>
+                    <div className="demo-reward-card__stock" style={{ color: r.stockColor }}>{r.stock}</div>
+                  </div>
+                </div>
+              ))}
+            </>}
+          </div>
+        )
+
+      // ─── REWARD DETAIL ─────────────────────
+      case 'reward-detail':
+        if (!selectedReward) return null
+        const canRedeem = points >= selectedReward.cost && selectedReward.stock === 'Disponible'
+        return (
+          <div className="demo-screen">
+            <div className="demo-header">
+              <button className="demo-header__back" onClick={popScreen}><IconBack /></button>
+              <span className="demo-header__title">Recompensa</span>
+            </div>
+            <div className="demo-reward-detail">
+              <div className="demo-reward-detail__hero">{selectedReward.icon}</div>
+              <div className="demo-reward-detail__name">{selectedReward.name}</div>
+              <div className="demo-reward-detail__partner">{selectedReward.partner}</div>
+              <div className="demo-reward-detail__cost">{selectedReward.cost}</div>
+              <div className="demo-reward-detail__cost-label">VoxPuntos</div>
+              <div className="demo-summary__info">
+                <div className="demo-summary__info-row"><span>Estado</span><span style={{ color: selectedReward.stockColor }}>{selectedReward.stock}</span></div>
+                <div className="demo-summary__info-row"><span>Vigencia</span><span>{selectedReward.validity}</span></div>
+                <div className="demo-summary__info-row"><span>Descripción</span><span style={{ maxWidth: 200 }}>{selectedReward.description}</span></div>
+              </div>
+              <button className="demo-onboarding__btn" style={{ marginTop: 20, opacity: canRedeem ? 1 : 0.4 }}
+                disabled={!canRedeem}
+                onClick={() => openConfirm(
+                  '¿Confirmar canje?',
+                  `Se descontarán ${selectedReward.cost} VoxPuntos de tu saldo.`,
+                  () => {
+                    setPoints(p => p - selectedReward.cost)
+                    setShowConfirm(false)
+                    showToast('¡Cupón canjeado! Revisa tus cupones.')
+                    popScreen()
+                  }
+                )}>
+                {canRedeem ? 'Canjear' : points < selectedReward.cost ? 'Puntos insuficientes' : 'No disponible'}
+              </button>
+            </div>
+          </div>
+        )
+
+      // ─── COUPONS ───────────────────────────
+      case 'coupons':
+        return (
+          <div className="demo-screen">
+            <div className="demo-header">
+              <button className="demo-header__back" onClick={popScreen}><IconBack /></button>
+              <span className="demo-header__title">Mis cupones</span>
+            </div>
+            <div className="demo-pad-content">
+              <div className="demo-points__tabs" style={{ marginBottom: 16 }}>
+                <button className={`demo-points__tab ${couponsTab === 'available' ? 'demo-points__tab--active' : ''}`} onClick={() => setCouponsTab('available')}>Disponibles</button>
+                <button className={`demo-points__tab ${couponsTab === 'used' ? 'demo-points__tab--active' : ''}`} onClick={() => setCouponsTab('used')}>Usados</button>
+                <button className={`demo-points__tab ${couponsTab === 'expired' ? 'demo-points__tab--active' : ''}`} onClick={() => setCouponsTab('expired')}>Vencidos</button>
+              </div>
+              {couponsTab === 'available' && (
+                <div className="demo-coupon">
+                  <span className="demo-coupon__icon">☕</span>
+                  <div className="demo-coupon__info">
+                    <div className="demo-coupon__name">Café gratis · La Paz Coffee</div>
+                    <div className="demo-coupon__expiry">Vence: 30/09/2026</div>
+                  </div>
+                  <button className="demo-coupon__use-btn" onClick={() => setShowQR(true)}>Usar</button>
+                </div>
+              )}
+              {couponsTab === 'used' && (
+                <div className="demo-coupon" style={{ opacity: 0.5 }}>
+                  <span className="demo-coupon__icon">🛒</span>
+                  <div className="demo-coupon__info">
+                    <div className="demo-coupon__name">Bs 10 descuento · Ketal</div>
+                    <div className="demo-coupon__expiry">Usado: 18/08/2026</div>
+                  </div>
+                </div>
+              )}
+              {couponsTab === 'expired' && (
+                <p style={{ color: 'var(--ev-text-muted)', fontSize: '0.85rem', textAlign: 'center', marginTop: 30 }}>No tienes cupones vencidos</p>
+              )}
+            </div>
+          </div>
+        )
+
+      // ─── PROFILE ───────────────────────────
+      case 'profile':
+        return (
+          <div className="demo-screen demo-profile">
+            <h1 className="demo-home__greeting" style={{ marginBottom: 16 }}>Perfil</h1>
+            <div className="demo-profile__header">
+              <div className="demo-profile__avatar">{isLoggedIn ? 'C' : '?'}</div>
+              <div>
+                <div className="demo-profile__name">{isLoggedIn ? 'Camila' : 'Visitante'}</div>
+                <div className="demo-profile__contact">{isLoggedIn ? 'camila@email.com' : 'Sin cuenta'}</div>
+              </div>
+            </div>
+            <div className="demo-profile__stats">
+              <div className="demo-profile__stat">
+                <span className="demo-profile__stat-val">{totalDeposits}</span>
+                <span className="demo-profile__stat-label">Envases</span>
+              </div>
+              <div className="demo-profile__stat">
+                <span className="demo-profile__stat-val">{points}</span>
+                <span className="demo-profile__stat-label">Puntos</span>
+              </div>
+              <div className="demo-profile__stat">
+                <span className="demo-profile__stat-val">3</span>
+                <span className="demo-profile__stat-label">Canjes</span>
+              </div>
+            </div>
+            {[
+              { icon: '📊', label: 'Impacto personal', screen: 'impact' as Screen },
+              { icon: '📋', label: 'Historial de reciclaje', screen: 'history' as Screen },
+              { icon: '🎟️', label: 'Mis cupones', screen: 'coupons' as Screen },
+              { icon: '⚙️', label: 'Preferencias', screen: 'preferences' as Screen },
+              { icon: '🔒', label: 'Privacidad y datos', screen: 'privacy' as Screen },
+              { icon: '❓', label: 'Ayuda y soporte', screen: null },
+            ].map((item, i) => (
+              <div key={i} className="demo-menu-item" onClick={() => item.screen ? pushScreen(item.screen) : showToast('Soporte no disponible en demo')}>
+                <span className="demo-menu-item__icon">{item.icon}</span>
+                <span className="demo-menu-item__label">{item.label}</span>
+                <span className="demo-menu-item__arrow"><IconChevron /></span>
+              </div>
+            ))}
+            <div className="demo-menu-item demo-menu-item--danger" onClick={() => showToast('Sesión cerrada (demo)')}>
+              <span className="demo-menu-item__icon">🚪</span>
+              <span className="demo-menu-item__label">Cerrar sesión</span>
+            </div>
+          </div>
+        )
+
+      // ─── IMPACT ────────────────────────────
+      case 'impact':
+        return (
+          <div className="demo-screen">
+            <div className="demo-header">
+              <button className="demo-header__back" onClick={popScreen}><IconBack /></button>
+              <span className="demo-header__title">Tu impacto</span>
+            </div>
+            <div className="demo-impact">
+              <div className="demo-impact__big">
+                <div className="demo-impact__big-num">{totalDeposits}</div>
+                <div className="demo-impact__big-label">envases reciclados</div>
+              </div>
+              <div className="demo-impact__weight">~{totalDeposits * 22}g de PET recuperado</div>
+              <p className="demo-impact__equiv">≈ {Math.round(totalDeposits / 7)} botellas menos en el vertedero por semana</p>
+
+              <div className="demo-section-label" style={{ textAlign: 'center' }}>Depósitos mensuales</div>
+              <div className="demo-impact__chart">
+                <div className="demo-impact__bar" style={{ height: '40%' }}><span className="demo-impact__bar-label">Jul</span></div>
+                <div className="demo-impact__bar" style={{ height: '65%' }}><span className="demo-impact__bar-label">Ago</span></div>
+                <div className="demo-impact__bar" style={{ height: '85%' }}><span className="demo-impact__bar-label">Sep</span></div>
+              </div>
+
+              <div className="demo-impact__streak">🔥 Racha: 3 semanas consecutivas</div>
+              <div className="demo-impact__community">
+                <div style={{ fontSize: '0.85rem', color: 'var(--ev-text-bright)', marginBottom: 4 }}>Comunidad EXOVOX</div>
+                <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.4rem', fontWeight: 800, color: 'var(--lime-500)' }}>1,247</div>
+                <div style={{ fontSize: '0.75rem', color: 'var(--ev-text-muted)' }}>envases reciclados en total</div>
+              </div>
+              <p className="demo-impact__note">Metodología: peso estimado de 22g por botella PET estándar. Datos actualizados al 01/09/2026.</p>
+            </div>
+          </div>
+        )
+
+      // ─── HISTORY ───────────────────────────
+      case 'history':
+        return (
+          <div className="demo-screen">
+            <div className="demo-header">
+              <button className="demo-header__back" onClick={popScreen}><IconBack /></button>
+              <span className="demo-header__title">Historial</span>
+            </div>
+            <div className="demo-pad-content">
+              {[
+                { date: '01/09/2026', station: 'VoxStation Campus UMSA', count: 3, pts: '+45' },
+                { date: '25/08/2026', station: 'VoxStation Megacenter', count: 2, pts: '+30' },
+                { date: '20/08/2026', station: 'VoxStation Campus UMSA', count: 1, pts: '+15' },
+              ].map((s, i) => (
+                <div key={i} className="demo-history-item">
+                  <div className="demo-history-item__top">
+                    <span className="demo-history-item__date">{s.date}</span>
+                    <span className="demo-history-item__pts">{s.pts}</span>
+                  </div>
+                  <div className="demo-history-item__station">{s.station}</div>
+                  <div className="demo-history-item__count">{s.count} envase{s.count > 1 ? 's' : ''} aceptado{s.count > 1 ? 's' : ''}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+
+      // ─── NOTIFICATIONS ─────────────────────
+      case 'notifications':
+        return (
+          <div className="demo-screen">
+            <div className="demo-header">
+              <button className="demo-header__back" onClick={popScreen}><IconBack /></button>
+              <span className="demo-header__title">Notificaciones</span>
+            </div>
+            <div className="demo-pad-content">
+              {[
+                { text: 'Sesión completada: +45 puntos', time: 'Hace 2 días' },
+                { text: 'Tu cupón de café vence en 3 días', time: 'Hace 1 día' },
+                { text: 'Nueva recompensa: 2x1 Cine', time: 'Hace 4 días' },
+                { text: 'VoxStation UMSA disponible nuevamente', time: 'Hace 1 semana' },
+              ].map((n, i) => (
+                <div key={i} className="demo-notif">
+                  <div className="demo-notif__dot" />
+                  <div>
+                    <div className="demo-notif__text">{n.text}</div>
+                    <div className="demo-notif__time">{n.time}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+
+      // ─── PREFERENCES ──────────────────────
+      case 'preferences':
+        return (
+          <div className="demo-screen">
+            <div className="demo-header">
+              <button className="demo-header__back" onClick={popScreen}><IconBack /></button>
+              <span className="demo-header__title">Preferencias</span>
+            </div>
+            <div className="demo-pad-content">
+              <div className="demo-section-label">Notificaciones</div>
+              <div className="demo-pref-row"><span className="demo-pref-row__label">Transaccionales</span><button className={`demo-toggle ${prefTransactional ? 'demo-toggle--on' : 'demo-toggle--off'}`} onClick={() => setPrefTransactional(v => !v)} /></div>
+              <div className="demo-pref-row"><span className="demo-pref-row__label">Operativas</span><button className={`demo-toggle ${prefOperative ? 'demo-toggle--on' : 'demo-toggle--off'}`} onClick={() => setPrefOperative(v => !v)} /></div>
+              <div className="demo-pref-row"><span className="demo-pref-row__label">Recompensas</span><button className={`demo-toggle ${prefRewards ? 'demo-toggle--on' : 'demo-toggle--off'}`} onClick={() => setPrefRewards(v => !v)} /></div>
+              <div className="demo-pref-row"><span className="demo-pref-row__label">Marketing</span><button className={`demo-toggle ${prefMarketing ? 'demo-toggle--on' : 'demo-toggle--off'}`} onClick={() => setPrefMarketing(v => !v)} /></div>
+              <div style={{ marginTop: 24 }}>
+                <div className="demo-section-label">General</div>
+                <div className="demo-pref-row"><span className="demo-pref-row__label">Ubicación</span><span style={{ color: 'var(--lime-500)', fontSize: '0.82rem' }}>Activa</span></div>
+                <div className="demo-pref-row"><span className="demo-pref-row__label">Idioma</span><span style={{ color: 'var(--ev-text-bright)', fontSize: '0.82rem' }}>Español</span></div>
+              </div>
+            </div>
+          </div>
+        )
+
+      // ─── PRIVACY ──────────────────────────
+      case 'privacy':
+        return (
+          <div className="demo-screen">
+            <div className="demo-header">
+              <button className="demo-header__back" onClick={popScreen}><IconBack /></button>
+              <span className="demo-header__title">Privacidad y datos</span>
+            </div>
+            <div className="demo-pad-content">
+              <div className="demo-section-label">Tus datos</div>
+              <button className="demo-privacy-btn" onClick={() => showToast('Descarga iniciada (demo)')}>📥 Descargar mis datos</button>
+              <button className="demo-privacy-btn" onClick={() => showToast('Abriendo política (demo)')}>📜 Política de privacidad</button>
+              <button className="demo-privacy-btn" onClick={() => showToast('Abriendo términos (demo)')}>📋 Términos de uso (v2.1)</button>
+              <button className="demo-privacy-btn demo-privacy-btn--danger"
+                onClick={() => openConfirm('¿Eliminar cuenta?', 'Esta acción es irreversible. Se eliminarán todos tus datos.', () => {
+                  setShowConfirm(false)
+                  showToast('Cuenta eliminada (demo)')
+                })}>
+                🗑️ Eliminar mi cuenta
+              </button>
+            </div>
+          </div>
+        )
+
+      default:
+        return null
+    }
+  }
+
+  // Show bottom nav?
+  const showNav = ['home', 'locations', 'points', 'profile'].includes(screen)
+
+  return (
+    <div className="demo-page">
+      <div className="demo-topbar">
+        <Link to="/" className="demo-topbar__back">
+          <IconBack /> Volver
+        </Link>
+        <div className="demo-topbar__info">
+          <h1 className="demo-topbar__title">EXOVOX Demo</h1>
+          <p className="demo-topbar__desc">Demo interactiva de la app móvil</p>
+        </div>
+      </div>
+
+      <div className="demo-phone">
+        <div className="demo-phone__notch" />
+        <div className="demo-phone__screen">
+          <div className="demo-app">
+            {renderScreen()}
+
+            {/* Bottom Navigation */}
+            {showNav && (
+              <div className="demo-nav">
+                <button className={`demo-nav__item ${screen === 'home' ? 'demo-nav__item--active' : ''}`} onClick={() => goToTab('home')}>
+                  <IconHome /><span>Inicio</span>
+                </button>
+                <button className={`demo-nav__item ${screen === 'locations' ? 'demo-nav__item--active' : ''}`} onClick={() => goToTab('locations')}>
+                  <IconMap /><span>Ubicaciones</span>
+                </button>
+                <button className="demo-nav__scan" onClick={() => pushScreen('scanner')}>
+                  <IconQR />
+                </button>
+                <button className={`demo-nav__item ${screen === 'points' ? 'demo-nav__item--active' : ''}`} onClick={() => goToTab('points')}>
+                  <IconStar /><span>Puntos</span>
+                </button>
+                <button className={`demo-nav__item ${screen === 'profile' ? 'demo-nav__item--active' : ''}`} onClick={() => goToTab('profile')}>
+                  <IconUser /><span>Perfil</span>
+                </button>
+              </div>
+            )}
+
+            {/* Toast */}
+            {toast && <div className="demo-toast">{toast}</div>}
+
+            {/* Confirm Modal */}
+            {showConfirm && (
+              <div className="demo-confirm">
+                <div className="demo-confirm__box">
+                  <h3 className="demo-confirm__title">{confirmText.title}</h3>
+                  <p className="demo-confirm__desc">{confirmText.desc}</p>
+                  <div className="demo-confirm__actions">
+                    <button className="demo-confirm__btn demo-confirm__btn--cancel" onClick={() => setShowConfirm(false)}>Cancelar</button>
+                    <button className="demo-confirm__btn demo-confirm__btn--ok" onClick={() => confirmAction?.()}>Confirmar</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* QR Code Modal */}
+            {showQR && (
+              <div className="demo-qr-modal">
+                <div className="demo-qr-modal__code">
+                  <div className="demo-qr-modal__qr-grid">
+                    {qrPattern.map((cell, i) => (
+                      <div key={i} className={`demo-qr-modal__qr-cell ${cell === 0 ? 'demo-qr-modal__qr-cell--empty' : ''}`} />
+                    ))}
+                  </div>
+                </div>
+                <div className="demo-qr-modal__text-code">EXV-4829</div>
+                <div className="demo-qr-modal__timer">Expira en 5:00</div>
+                <button className="demo-qr-modal__close" onClick={() => setShowQR(false)}>Cerrar</button>
+              </div>
+            )}
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+/* ─── Scanner Auto-Connect Helper ───────────────── */
+function ScannerAutoConnect({ onConnect }: { onConnect: () => void }) {
+  useEffect(() => {
+    const t = setTimeout(onConnect, 3000)
+    return () => clearTimeout(t)
+  }, [onConnect])
+  return null
+}

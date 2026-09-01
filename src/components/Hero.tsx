@@ -1,10 +1,9 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 
 export default function Hero({
-  onOpenPilotForm,
   onOpenAllyForm,
 }: {
-  onOpenPilotForm: () => void
   onOpenAllyForm: () => void
 }) {
   const [videoEnded, setVideoEnded] = useState(false)
@@ -60,16 +59,15 @@ export default function Hero({
 
             {/* Buttons / CTAs */}
             <div className="hero__actions">
-              <button
-                type="button"
+              <Link
+                to="/demo"
                 className="btn btn-hero-primary"
-                onClick={onOpenPilotForm}
               >
-                <span>Quiero participar en el piloto</span>
+                <span>Probar demo</span>
                 <svg width="18" height="18" viewBox="0 0 20 20" fill="none" aria-hidden="true">
                   <path d="M4.166 10h11.667M10 4.166L15.833 10 10 15.833" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                 </svg>
-              </button>
+              </Link>
 
               <button
                 type="button"
@@ -90,7 +88,7 @@ export default function Hero({
               </div>
               <p>
                 <strong style={{ color: '#FFFFFF' }}>Piloto en preparación en La Paz.</strong>{' '}
-                Participar en la lista no tiene costo ni garantiza selección.
+                Explora la demo interactiva de la app EXOVOX.
               </p>
             </div>
           </div>
