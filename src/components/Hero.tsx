@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 export default function Hero({
   onOpenPilotForm,
   onOpenAllyForm,
@@ -5,18 +7,26 @@ export default function Hero({
   onOpenPilotForm: () => void
   onOpenAllyForm: () => void
 }) {
+  const [videoEnded, setVideoEnded] = useState(false)
+
   return (
     <section className="hero" id="hero">
       {/* Full-screen product video background */}
       <div className="hero__bg" aria-hidden="true">
+        <img
+          src="/img/final%20home.png"
+          alt=""
+          className="hero__background-image"
+        />
         <video
           src="/video/video ekovox.mp4"
           autoPlay
-          loop
           muted
           playsInline
           preload="auto"
-          className="hero__background-video"
+          onEnded={() => setVideoEnded(true)}
+          onError={() => setVideoEnded(true)}
+          className={`hero__background-video ${videoEnded ? 'hero__background-video--ended' : ''}`}
         />
         <div className="hero__gradient" />
       </div>
