@@ -8,13 +8,13 @@ const offers = [
   },
   {
     icon: 'card_giftcard',
-    title: 'Aporta recompensas',
+    title: 'Aporta rEKOmpensas',
     desc: 'Ofrece beneficios a usuarios activos y fideliza.',
   },
   {
     icon: 'location_on',
     title: 'Aloja una estación',
-    desc: 'Convierte tu espacio en un punto de economía circular.',
+    desc: 'Convierte tu espacio en un punto de EKOnomía circular.',
   },
   {
     icon: 'trending_up',
@@ -33,7 +33,7 @@ const indicators = [
 
 const interestTypes = [
   'Patrocinar una estación',
-  'Aportar recompensas',
+  'Aportar rEKOmpensas',
   'Alojar una estación',
   'Campaña de recuperación',
   'Reportes e indicadores',
@@ -101,7 +101,7 @@ export default function ForBusiness() {
         </div>
 
         <blockquote className="biz-disclaimer">
-          Los datos representan envases depositados en EXOVOX; no equivalen a ventas, participación de
+          Los datos representan envases depositados en EKOVOX; no equivalen a ventas, participación de
           mercado ni consumo total.
         </blockquote>
 
@@ -158,7 +158,7 @@ export default function ForBusiness() {
 
             <label className="biz-form__consent">
               <input type="checkbox" required checked={form.consent} onChange={(e) => set('consent', e.target.checked)} />
-              <span>Acepto que EXOVOX use estos datos para contactarme sobre posibles alianzas.</span>
+              <span>Acepto que EKOVOX use estos datos para contactarme sobre posibles alianzas.</span>
             </label>
 
             <button type="submit" className="btn btn-primary" style={{ width: '100%' }}>

@@ -65,7 +65,7 @@ export default function LocationPreview() {
                 Próximas ubicaciones por confirmar
               </text>
 
-              {/* Decorative pulse circles */}
+              {/* DEKOrative pulse circles */}
               <circle cx="180" cy="160" r="6" fill="none" stroke="var(--ev-yellow)" strokeWidth="1" opacity="0.3">
                 <animate attributeName="r" values="6;20;6" dur="3s" repeatCount="indefinite" />
                 <animate attributeName="opacity" values="0.3;0;0.3" dur="3s" repeatCount="indefinite" />

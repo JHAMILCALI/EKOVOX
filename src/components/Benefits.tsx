@@ -34,7 +34,7 @@ const categories = [
   {
     icon: 'emoji_events',
     title: 'Retos y premios especiales',
-    desc: 'Compite y gana recompensas únicas.',
+    desc: 'Compite y gana rEKOmpensas únicas.',
     gradient: 'linear-gradient(135deg, rgba(255,184,0,0.15), rgba(255,107,74,0.10))',
   },
 ]
@@ -57,10 +57,10 @@ export default function Benefits() {
   }, [])
 
   return (
-    <section id="recompensas" className="benefits">
+    <section id="rEKOmpensas" className="benefits">
       <div className="section">
         <div className="section-header">
-          <span className="eyebrow">Recompensas</span>
+          <span className="eyebrow">REKOmpensas</span>
           <h2>Puntos que se convierten en experiencias útiles</h2>
         </div>
 
@@ -81,7 +81,7 @@ export default function Benefits() {
         </div>
 
         <blockquote className="benefits__disclaimer">
-          Las recompensas dependen de disponibilidad, ubicación, vigencia y condiciones de cada aliado.
+          Las rEKOmpensas dependen de disponibilidad, ubicación, vigencia y condiciones de cada aliado.
           Antes del lanzamiento publicaremos el valor en puntos y las reglas de cada beneficio.
         </blockquote>
       </div>

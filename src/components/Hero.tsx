@@ -71,7 +71,7 @@ export default function Hero({
 
               <button
                 type="button"
-                className="btn btn-hero-secondary"
+                className="btn btn-hero-sEKOndary"
                 onClick={onOpenAllyForm}
               >
                 Quiero ser aliado
@@ -88,7 +88,7 @@ export default function Hero({
               </div>
               <p>
                 <strong style={{ color: '#FFFFFF' }}>Piloto en preparación en La Paz.</strong>{' '}
-                Explora la demo interactiva de la app EXOVOX.
+                Explora la demo interactiva de la app EKOVOX.
               </p>
             </div>
           </div>

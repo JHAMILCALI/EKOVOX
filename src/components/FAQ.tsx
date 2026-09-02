@@ -2,7 +2,7 @@ import { useState } from 'react'
 
 const faqs = [
   {
-    q: '¿EXOVOX ya está funcionando?',
+    q: '¿EKOVOX ya está funcionando?',
     a: 'Estamos construyendo el prototipo y preparando un piloto en La Paz. Publicaremos ubicaciones únicamente cuando estén confirmadas.',
   },
   {
@@ -23,7 +23,7 @@ const faqs = [
   },
   {
     q: '¿Los puntos son dinero?',
-    a: 'No. Son unidades promocionales del programa EXOVOX y se usan bajo las condiciones publicadas.',
+    a: 'No. Son unidades promocionales del programa EKOVOX y se usan bajo las condiciones publicadas.',
   },
   {
     q: '¿Puedo retirar efectivo?',
@@ -35,7 +35,7 @@ const faqs = [
   },
   {
     q: '¿Venden mis hábitos de consumo?',
-    a: 'No vendemos datos personales ni historiales individuales. EXOVOX ofrece indicadores operativos y ambientales agregados.',
+    a: 'No vendemos datos personales ni historiales individuales. EKOVOX ofrece indicadores operativos y ambientales agregados.',
   },
   {
     q: '¿Qué pasa con las botellas?',
@@ -43,7 +43,7 @@ const faqs = [
   },
   {
     q: '¿Cómo puede participar una empresa?',
-    a: 'Puede aportar recompensas, alojar o patrocinar una estación, financiar una campaña o contratar reportes agregados.',
+    a: 'Puede aportar rEKOmpensas, alojar o patrocinar una estación, financiar una campaña o contratar reportes agregados.',
   },
 ]
 

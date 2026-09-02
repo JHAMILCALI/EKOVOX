@@ -14,7 +14,7 @@ export default function AppPreview() {
       <div className="section">
         <div className="section-header">
           <span className="eyebrow">La App</span>
-          <h2>Tu reciclaje, tus puntos y tus recompensas en un solo lugar</h2>
+          <h2>Tu reciclaje, tus puntos y tus rEKOmpensas en un solo lugar</h2>
         </div>
 
         <div className="app-preview__layout">
@@ -93,7 +93,7 @@ export default function AppPreview() {
                 <div className="app-screen__content">
                   <div className="app-screen__header">
                     <span className="material-symbols-rounded" style={{ fontSize: 16, marginRight: 4 }}>card_giftcard</span>
-                    Recompensas
+                    REKOmpensas
                   </div>
                   <div className="app-screen__body">
                     <div className="app-mock-rewards">
@@ -113,7 +113,7 @@ export default function AppPreview() {
                   </div>
                 </div>
               </div>
-              <span className="app-screen__label">Recompensas</span>
+              <span className="app-screen__label">REKOmpensas</span>
             </div>
           </div>
 

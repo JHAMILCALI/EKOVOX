@@ -79,11 +79,17 @@ export default function DemoPage() {
   const [, setScreenStack] = useState<Screen[]>([])
   const [isLoggedIn, setIsLoggedIn] = useState(true)
 
+  // Layout & Video Animation state
+  const [phonePosition, setPhonePosition] = useState<'center' | 'right' | 'left'>('center')
+  const [bgVideo, setBgVideo] = useState<string | null>(null)
+  const [bgBlur, setBgBlur] = useState<boolean>(false)
+
   // App state
   const [points, setPoints] = useState(150)
   const [showBalance, setShowBalance] = useState(true)
   const [totalDeposits, setTotalDeposits] = useState(20)
   const [onboardingPage, setOnboardingPage] = useState(0)
+
   /* Preserved auth state for future demo activation:
   const [authMode, setAuthMode] = useState<'phone' | 'email'>('phone')
   const [authStep, setAuthStep] = useState<'input' | 'code' | 'profile'>('input')
@@ -100,7 +106,6 @@ export default function DemoPage() {
   const [sessionRejected, setSessionRejected] = useState(0)
   const [sessionPoints, setSessionPoints] = useState(0)
   const [sessionEvents, setSessionEvents] = useState<DepositEvent[]>([])
-  const [, setSessionDepositIndex] = useState(0)
 
   // UI state
   const [toast, setToast] = useState('')
@@ -118,8 +123,9 @@ export default function DemoPage() {
   const [prefMarketing, setPrefMarketing] = useState(false)
 
   // Refs
+  const scanTransitionTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const sessionTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
-  const depositTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const depositTimeoutsRef = useRef<ReturnType<typeof setTimeout>[]>([])
   const touchStartX = useRef(0)
 
   // ─── Navigation helpers ──────────────────────────
@@ -142,6 +148,68 @@ export default function DemoPage() {
     setScreen(s)
   }, [])
 
+  // ─── Toast helper ────────────────────────────────
+  const showToast = useCallback((msg: string) => {
+    setToast(msg)
+    setTimeout(() => setToast(''), 3500)
+  }, [])
+
+  // ─── Scan Trigger Handler ────────────────────────
+  // Al presionar el botón de escanear mueve el teléfono al borde derecho,
+  // reproduce 'demo_qr_escaner.mp4' en el background con desenfoque focalizado detrás del teléfono,
+  // y espera 3 segundos para cambiar a la pantalla de cámara escáner QR.
+  const handleStartScan = useCallback(() => {
+    setPhonePosition('right')
+    setBgVideo('/video/demo_qr_escaner.mp4')
+    setBgBlur(true)
+
+    if (scanTransitionTimerRef.current) clearTimeout(scanTransitionTimerRef.current)
+    scanTransitionTimerRef.current = setTimeout(() => {
+      setScreen('scanner')
+      setScreenStack([])
+    }, 3000)
+  }, [])
+
+  // ─── Close / Cancel Scanner ──────────────────────
+  const handleCloseScanner = useCallback(() => {
+    if (scanTransitionTimerRef.current) clearTimeout(scanTransitionTimerRef.current)
+    setBgVideo(null)
+    setBgBlur(false)
+    setPhonePosition('center')
+    goToTab('home')
+  }, [goToTab])
+
+  // ─── End Session Handler ─────────────────────────
+  // Regresa el teléfono al centro, apaga video de fondo y navega de vuelta a home
+  const handleEndSession = useCallback(() => {
+    if (sessionTimerRef.current) clearInterval(sessionTimerRef.current)
+    depositTimeoutsRef.current.forEach(t => clearTimeout(t))
+    depositTimeoutsRef.current = []
+
+    setPoints(p => p + sessionPoints)
+    setTotalDeposits(d => d + sessionAccepted)
+    setBgVideo(null)
+    setBgBlur(false)
+    setPhonePosition('center')
+    goToTab('home')
+    showToast(`¡Sesión terminada! Has sumado +${sessionPoints} VoxPuntos`)
+  }, [sessionPoints, sessionAccepted, goToTab, showToast])
+
+  // ─── Locations Video (demo_map.mp4 sin desenfoque)
+  // Agrega el video 'demo_map.mp4' cuando se entre a la sección de ubicaciones, sin desenfoque
+  useEffect(() => {
+    if (screen === 'locations') {
+      setBgVideo('/video/demo_map.mp4')
+      setBgBlur(false)
+    } else if (screen !== 'scanner' && screen !== 'session') {
+      // Si sale de ubicaciones y no está en el flujo de escaneo/sesión, apagar el video de mapa
+      if (bgVideo === '/video/demo_map.mp4') {
+        setBgVideo(null)
+        setBgBlur(false)
+      }
+    }
+  }, [screen, bgVideo])
+
   // ─── Splash auto-transition ──────────────────────
   useEffect(() => {
     if (screen === 'splash') {
@@ -150,94 +218,108 @@ export default function DemoPage() {
     }
   }, [screen])
 
-  // ─── Toast helper ────────────────────────────────
-  const showToast = useCallback((msg: string) => {
-    setToast(msg)
-    setTimeout(() => setToast(''), 3000)
-  }, [])
-
-  // ─── Session timer ───────────────────────────────
+  // ─── Scanner auto-transition (3s) ────────────────
+  // En lugar de pantalla negra, se reproduce demo_qr_escaner_first_person.mp4
+  // y tras 3 segundos pasa automáticamente a la pantalla de sesión de reciclaje.
   useEffect(() => {
-    if (screen === 'session') {
-      setSessionTime(0)
-      setSessionAccepted(0)
-      setSessionRejected(0)
-      setSessionPoints(0)
-      setSessionEvents([{ type: 'idle', message: 'Acerca una botella' }])
-      setSessionDepositIndex(0)
-
-      sessionTimerRef.current = setInterval(() => {
-        setSessionTime(t => t + 1)
-      }, 1000)
-
-      return () => {
-        if (sessionTimerRef.current) clearInterval(sessionTimerRef.current)
-      }
+    if (screen === 'scanner') {
+      const t = setTimeout(() => {
+        setScreen('session')
+        setScreenStack([])
+      }, 3000)
+      return () => clearTimeout(t)
     }
   }, [screen])
 
-  // ─── Auto-simulate deposits ──────────────────────
+  // ─── Session: Mover a la izquierda, video botellas y 20s
+  // Al entrar a Sesión de reciclaje mueve la pantalla a la izquierda,
+  // transiciona el video del fondo a demo_qr_botellas.mp4
+  // y abarca exactamente 20 segundos de ingreso de botellas.
+  // Una vez terminada regresa el teléfono al centro y navega de vuelta a home.
   useEffect(() => {
     if (screen !== 'session') return
 
-    const DEPOSITS = [
-      { delay: 3000, validateTime: 1500, result: 'accepted' as const, msg: 'Botella aceptada: +15 puntos', pts: 15 },
-      { delay: 4000, validateTime: 1500, result: 'accepted' as const, msg: 'Botella aceptada: +15 puntos', pts: 15 },
-      { delay: 4000, validateTime: 1500, result: 'rejected' as const, msg: 'La botella todavía tiene líquido', pts: 0 },
-      { delay: 4000, validateTime: 1500, result: 'accepted' as const, msg: 'Botella aceptada: +15 puntos', pts: 15 },
-    ]
+    // Mueve la pantalla a la izquierda y transiciona video de fondo a botellas
+    setPhonePosition('left')
+    setBgVideo('/video/demo_qr_botellas.mp4')
+    setBgBlur(true)
 
-    let currentIndex = 0
-    let cancelled = false
+    setSessionTime(0)
+    setSessionAccepted(0)
+    setSessionRejected(0)
+    setSessionPoints(0)
+    setSessionEvents([{ type: 'idle', message: 'Acerca una botella a la compuerta' }])
 
-    const runDeposit = () => {
-      if (cancelled || currentIndex >= DEPOSITS.length) return
-      const deposit = DEPOSITS[currentIndex]
+    // Timer de 20 segundos (1 segundo por tick)
+    sessionTimerRef.current = setInterval(() => {
+      setSessionTime(t => Math.min(t + 1, 20))
+    }, 1000)
 
-      depositTimerRef.current = setTimeout(() => {
-        if (cancelled) return
-        // Validating
-        setSessionEvents(prev => [...prev, { type: 'validating', message: 'Validando envase...' }])
+    // Cronograma exacto de depósitos durante los 20s
+    depositTimeoutsRef.current.forEach(t => clearTimeout(t))
+    depositTimeoutsRef.current = []
 
-        depositTimerRef.current = setTimeout(() => {
-          if (cancelled) return
-          // Result
-          setSessionEvents(prev => {
-            const newEvents = prev.filter(e => e.type !== 'validating')
-            return [...newEvents, { type: deposit.result, message: deposit.msg, points: deposit.pts }]
-          })
+    // Botella 1 (Validación t=2.5s, Aceptada t=4.5s)
+    depositTimeoutsRef.current.push(setTimeout(() => {
+      setSessionEvents(prev => [...prev, { type: 'validating', message: 'Validando botella 1/4...' }])
+    }, 2500))
 
-          if (deposit.result === 'accepted') {
-            setSessionAccepted(a => a + 1)
-            setSessionPoints(p => p + deposit.pts)
-          } else {
-            setSessionRejected(r => r + 1)
-          }
+    depositTimeoutsRef.current.push(setTimeout(() => {
+      setSessionEvents(prev => [...prev.filter(e => e.type !== 'validating'), { type: 'accepted', message: 'Botella aceptada: +15 puntos', points: 15 }])
+      setSessionAccepted(1)
+      setSessionPoints(15)
+    }, 4500))
 
-          currentIndex++
-          if (currentIndex < DEPOSITS.length) {
-            runDeposit()
-          }
-        }, deposit.validateTime)
-      }, deposit.delay)
-    }
+    // Botella 2 (Validación t=7.5s, Aceptada t=9.5s)
+    depositTimeoutsRef.current.push(setTimeout(() => {
+      setSessionEvents(prev => [...prev, { type: 'validating', message: 'Validando botella 2/4...' }])
+    }, 7500))
 
-    runDeposit()
+    depositTimeoutsRef.current.push(setTimeout(() => {
+      setSessionEvents(prev => [...prev.filter(e => e.type !== 'validating'), { type: 'accepted', message: 'Botella aceptada: +15 puntos', points: 15 }])
+      setSessionAccepted(2)
+      setSessionPoints(30)
+    }, 9500))
+
+    // Botella 3 (Validación t=12.0s, Rechazo t=14.0s)
+    depositTimeoutsRef.current.push(setTimeout(() => {
+      setSessionEvents(prev => [...prev, { type: 'validating', message: 'Validando botella 3/4...' }])
+    }, 12000))
+
+    depositTimeoutsRef.current.push(setTimeout(() => {
+      setSessionEvents(prev => [...prev.filter(e => e.type !== 'validating'), { type: 'rejected', message: 'La botella todavía tiene líquido', points: 0 }])
+      setSessionRejected(1)
+    }, 14000))
+
+    // Botella 4 (Validación t=16.5s, Aceptada t=18.5s)
+    depositTimeoutsRef.current.push(setTimeout(() => {
+      setSessionEvents(prev => [...prev, { type: 'validating', message: 'Validando botella 4/4...' }])
+    }, 16500))
+
+    depositTimeoutsRef.current.push(setTimeout(() => {
+      setSessionEvents(prev => [...prev.filter(e => e.type !== 'validating'), { type: 'accepted', message: 'Botella aceptada: +15 puntos', points: 15 }])
+      setSessionAccepted(3)
+      setSessionPoints(45)
+    }, 18500))
+
+    // t = 20.0s (Terminación exacta de la sesión a los 20 segundos)
+    depositTimeoutsRef.current.push(setTimeout(() => {
+      if (sessionTimerRef.current) clearInterval(sessionTimerRef.current)
+      setPoints(p => p + 45)
+      setTotalDeposits(d => d + 3)
+      setBgVideo(null)
+      setBgBlur(false)
+      setPhonePosition('center')
+      goToTab('home')
+      showToast('¡Sesión completada! Has reciclado 3 botellas (+45 VoxPuntos)')
+    }, 20000))
 
     return () => {
-      cancelled = true
-      if (depositTimerRef.current) clearTimeout(depositTimerRef.current)
+      if (sessionTimerRef.current) clearInterval(sessionTimerRef.current)
+      depositTimeoutsRef.current.forEach(t => clearTimeout(t))
+      depositTimeoutsRef.current = []
     }
-  }, [screen])
-
-  const endSession = useCallback(() => {
-    if (sessionTimerRef.current) clearInterval(sessionTimerRef.current)
-    if (depositTimerRef.current) clearTimeout(depositTimerRef.current)
-    setPoints(p => p + sessionPoints)
-    setTotalDeposits(d => d + sessionAccepted)
-    setScreen('session-summary')
-    setScreenStack([])
-  }, [sessionPoints, sessionAccepted])
+  }, [screen, goToTab, showToast])
 
   const formatTime = (s: number) => `${Math.floor(s / 60)}:${(s % 60).toString().padStart(2, '0')}`
 
@@ -270,7 +352,7 @@ export default function DemoPage() {
   }
 
   // ─── QR mock pattern ────────────────────────────
-  const qrPattern = [1,1,1,0,1,1,1,0, 1,0,1,0,0,1,0,1, 1,1,1,0,1,0,1,1, 0,0,0,0,1,0,0,0, 1,0,1,1,0,1,0,1, 1,0,0,0,1,1,1,0, 1,1,1,0,0,1,0,1, 0,0,0,1,1,0,1,1]
+  const qrPattern = [1, 1, 1, 0, 1, 1, 1, 0, 1, 0, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 1, 0, 1, 0, 1, 1, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 0, 0, 1, 0, 1, 0, 0, 0, 1, 1, 0, 1, 1]
 
   /* ═════════════════════════════════════════════════
      RENDER SCREENS
@@ -282,7 +364,7 @@ export default function DemoPage() {
       case 'splash':
         return (
           <div className="demo-screen demo-splash">
-            <div className="demo-splash__logo">EXO<span>VOX</span></div>
+            <div className="demo-splash__logo">EKO<span>VOX</span></div>
             <p className="demo-splash__tagline">Tu reciclaje tiene voz.</p>
             <div className="demo-splash__spinner" />
             <span className="demo-splash__version">v1.0.0-beta</span>
@@ -321,51 +403,7 @@ export default function DemoPage() {
       case 'auth':
         return (
           <div className="demo-screen demo-auth">
-            {authStep === 'input' && <>
-              <h2 className="demo-auth__title">Crear cuenta</h2>
-              <p className="demo-auth__subtitle">Ingresa tu teléfono o correo para empezar</p>
-              <div className="demo-auth__toggle">
-                <button className={`demo-auth__toggle-btn ${authMode === 'phone' ? 'demo-auth__toggle-btn--active' : ''}`} onClick={() => setAuthMode('phone')}>Teléfono</button>
-                <button className={`demo-auth__toggle-btn ${authMode === 'email' ? 'demo-auth__toggle-btn--active' : ''}`} onClick={() => setAuthMode('email')}>Correo</button>
-              </div>
-              <input className="demo-auth__input" placeholder={authMode === 'phone' ? '+591 7X XXX XXX' : 'tu@correo.com'} readOnly />
-              <button className="demo-auth__btn" onClick={() => setAuthStep('code')}>Enviar código</button>
-              <button className="demo-auth__skip" onClick={() => { setIsLoggedIn(false); goToTab('home') }}>Explorar sin cuenta</button>
-            </>}
-            {authStep === 'code' && <>
-              <h2 className="demo-auth__title">Código de verificación</h2>
-              <p className="demo-auth__subtitle">Ingresa el código enviado a tu {authMode === 'phone' ? 'teléfono' : 'correo'}</p>
-              <div className="demo-auth__code-wrap">
-                {['4','7','2','9','1','6'].map((d, i) => (
-                  <div key={i} className="demo-auth__code-digit">{d}</div>
-                ))}
-              </div>
-              <button className="demo-auth__btn" onClick={() => setAuthStep('profile')}>Verificar</button>
-            </>}
-            {authStep === 'profile' && <>
-              <h2 className="demo-auth__title">Completa tu perfil</h2>
-              <p className="demo-auth__subtitle">Solo necesitamos algunos datos básicos</p>
-              <label className="demo-auth__label">Nombre o alias</label>
-              <input className="demo-auth__input" defaultValue="Camila" readOnly />
-              <label className="demo-auth__label">Ciudad</label>
-              <select className="demo-auth__select demo-auth__input" defaultValue="lapaz">
-                <option value="lapaz">La Paz</option>
-                <option value="cbba">Cochabamba</option>
-                <option value="scz">Santa Cruz</option>
-              </select>
-              <label className="demo-auth__label">Rango de edad</label>
-              <select className="demo-auth__select demo-auth__input" defaultValue="18-24">
-                <option value="18-24">18-24</option>
-                <option value="25-34">25-34</option>
-                <option value="35-44">35-44</option>
-                <option value="45+">45+</option>
-              </select>
-              <label className="demo-auth__check">
-                <input type="checkbox" defaultChecked readOnly />
-                Acepto los términos y condiciones y la política de privacidad de EXOVOX
-              </label>
-              <button className="demo-auth__btn" onClick={() => { setIsLoggedIn(true); goToTab('home') }}>Crear cuenta</button>
-            </>}
+            ...
           </div>
         )
       ──────────────────────────────────────────────────────────── */
@@ -387,7 +425,7 @@ export default function DemoPage() {
               </div>
 
               <div className="demo-home__header-right">
-                <button className="demo-home__action-circle" onClick={() => showToast('Centro de soporte EXOVOX')} title="Soporte">
+                <button className="demo-home__action-circle" onClick={() => showToast('Centro de soporte EKOVOX')} title="Soporte">
                   <MatIcon name="support_agent" style={{ fontSize: 20 }} />
                 </button>
                 <button className="demo-home__action-circle demo-home__action-circle--badge" onClick={() => pushScreen('notifications')} title="Notificaciones">
@@ -401,7 +439,7 @@ export default function DemoPage() {
             <div className="demo-balance-card">
               <div className="demo-balance-card__top">
                 <div className="demo-balance-card__brand">
-                  EXO<span>VOX</span>
+                  EKO<span>VOX</span>
                 </div>
                 <div className="demo-balance-card__id">EVX-60558</div>
               </div>
@@ -427,7 +465,7 @@ export default function DemoPage() {
 
             {/* 3 Quick Action Cards */}
             <div className="demo-quick-grid">
-              <div className="demo-quick-card" onClick={() => pushScreen('scanner')}>
+              <div className="demo-quick-card" onClick={handleStartScan}>
                 <div className="demo-quick-card__icon-wrap demo-quick-card__icon-wrap--green">
                   <MatIcon name="qr_code_scanner" />
                 </div>
@@ -454,7 +492,7 @@ export default function DemoPage() {
 
             {/* Two Wide Pill Action Buttons */}
             <div className="demo-pill-actions">
-              <button className="demo-pill-btn demo-pill-btn--primary" onClick={() => pushScreen('scanner')}>
+              <button className="demo-pill-btn demo-pill-btn--primary" onClick={handleStartScan}>
                 <MatIcon name="qr_code_scanner" style={{ fontSize: 20 }} />
                 <span>Escanear QR</span>
               </button>
@@ -635,23 +673,33 @@ export default function DemoPage() {
       case 'scanner':
         return (
           <div className="demo-screen demo-scanner">
-            <button className="demo-scanner__close" onClick={popScreen}>
-              <MatIcon name="close" style={{ fontSize: 22 }} />
-            </button>
-            <div className="demo-scanner__frame">
-              <div className="demo-scanner__corner demo-scanner__corner--tl" />
-              <div className="demo-scanner__corner demo-scanner__corner--tr" />
-              <div className="demo-scanner__corner demo-scanner__corner--bl" />
-              <div className="demo-scanner__corner demo-scanner__corner--br" />
-              <div className="demo-scanner__line" />
+            {/* Reproduce en la pantalla del teléfono el video en primera persona */}
+            <video
+              src="/video/demo_qr_escaner_first_person.mp4"
+              autoPlay
+              muted
+              playsInline
+              loop
+              className="demo-scanner__video"
+            />
+            <div className="demo-scanner__content">
+              <button className="demo-scanner__close" onClick={handleCloseScanner}>
+                <MatIcon name="close" style={{ fontSize: 22 }} />
+              </button>
+              <div className="demo-scanner__frame">
+                <div className="demo-scanner__corner demo-scanner__corner--tl" />
+                <div className="demo-scanner__corner demo-scanner__corner--tr" />
+                <div className="demo-scanner__corner demo-scanner__corner--bl" />
+                <div className="demo-scanner__corner demo-scanner__corner--br" />
+                <div className="demo-scanner__line" />
+              </div>
+              <p className="demo-scanner__text">Escaneando VoxStation...</p>
+              <p className="demo-scanner__subtext">Apunta al código QR en la estación</p>
+              <button className="demo-scanner__manual" onClick={() => {
+                setScreen('session')
+                setScreenStack([])
+              }}>Ingresar código manual</button>
             </div>
-            <p className="demo-scanner__text">Escanea el QR de la VoxStation</p>
-            <p className="demo-scanner__subtext">No escanees el código de la botella</p>
-            <button className="demo-scanner__manual" onClick={() => {
-              setScreen('session')
-              setScreenStack([])
-            }}>Ingresar código manual</button>
-            <ScannerAutoConnect onConnect={() => { setScreen('session'); setScreenStack([]) }} />
           </div>
         )
 
@@ -667,7 +715,7 @@ export default function DemoPage() {
                 <div className="demo-session__pulse" />
                 <span className="demo-session__station">VoxStation Campus UMSA conectada</span>
               </div>
-              <div className="demo-session__timer">{formatTime(sessionTime)}</div>
+              <div className="demo-session__timer">{formatTime(sessionTime)} / 0:20</div>
               <div className="demo-session__stats">
                 <div className="demo-session__stat">
                   <span className="demo-session__stat-val demo-session__stat-val--accepted">{sessionAccepted}</span>
@@ -691,10 +739,10 @@ export default function DemoPage() {
                           e.type === 'idle'
                             ? 'autorenew'
                             : e.type === 'validating'
-                            ? 'hourglass_top'
-                            : e.type === 'accepted'
-                            ? 'check_circle'
-                            : 'cancel'
+                              ? 'hourglass_top'
+                              : e.type === 'accepted'
+                                ? 'check_circle'
+                                : 'cancel'
                         }
                         style={{ fontSize: 18 }}
                       />
@@ -704,8 +752,8 @@ export default function DemoPage() {
                   </div>
                 ))}
               </div>
-              <p className="demo-session__instruction">Deposita una botella a la vez</p>
-              <button className="demo-session__end-btn" onClick={endSession}>Terminar sesión</button>
+              <p className="demo-session__instruction">Deposita una botella a la vez en la compuerta</p>
+              <button className="demo-session__end-btn" onClick={handleEndSession}>Terminar sesión</button>
             </div>
           </div>
         )
@@ -989,7 +1037,7 @@ export default function DemoPage() {
                 Racha: 3 semanas consecutivas
               </div>
               <div className="demo-impact__community">
-                <div style={{ fontSize: '0.85rem', color: 'var(--ev-text-bright)', marginBottom: 4 }}>Comunidad EXOVOX</div>
+                <div style={{ fontSize: '0.85rem', color: 'var(--ev-text-bright)', marginBottom: 4 }}>Comunidad EKOVOX</div>
                 <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.4rem', fontWeight: 800, color: 'var(--lime-500)' }}>1,247</div>
                 <div style={{ fontSize: '0.75rem', color: 'var(--ev-text-muted)' }}>envases reciclados en total</div>
               </div>
@@ -1127,100 +1175,115 @@ export default function DemoPage() {
 
   return (
     <div className="demo-page">
+      {/* Background Video with Clean / Sharp Display */}
+      <div className={`demo-bg-video-wrap ${bgVideo ? 'demo-bg-video-wrap--active' : ''}`} aria-hidden="true">
+        {bgVideo && (
+          <video
+            key={bgVideo}
+            src={bgVideo}
+            autoPlay
+            muted
+            playsInline
+            loop
+            className="demo-bg-video"
+          />
+        )}
+        <div className={`demo-bg-video__gradient ${!bgBlur ? 'demo-bg-video__gradient--light' : ''}`} />
+      </div>
+
       <div className="demo-topbar">
         <Link to="/" className="demo-topbar__back">
           <MatIcon name="arrow_back" style={{ fontSize: 18 }} />
           Volver
         </Link>
         <div className="demo-topbar__info">
-          <h1 className="demo-topbar__title">EXOVOX Demo</h1>
+          <h1 className="demo-topbar__title">EKOVOX Demo</h1>
           <p className="demo-topbar__desc">Demo interactiva de la app móvil</p>
         </div>
       </div>
 
-      <div className="demo-phone">
-        <div className="demo-phone__notch" />
-        <div className="demo-phone__screen">
-          <div className="demo-app">
-            {renderScreen()}
+      {/* Phone Wrapper with Smooth Left / Right / Center Translation */}
+      <div className={`demo-phone-wrapper demo-phone-wrapper--${phonePosition}`}>
+        {/* Desenfoque focalizado SOLO detrás del teléfono */}
+        {bgVideo && bgBlur && (
+          <div className="demo-phone-backdrop-blur" aria-hidden="true" />
+        )}
 
-            {/* Bottom Navigation */}
-            {showNav && (
-              <div className="demo-nav">
-                <button className={`demo-nav__item ${screen === 'home' ? 'demo-nav__item--active' : ''}`} onClick={() => goToTab('home')}>
-                  <div className="demo-nav__icon-pill">
-                    <MatIcon name="home" />
-                  </div>
-                  <span>Inicio</span>
-                </button>
-                <button className={`demo-nav__item ${screen === 'locations' ? 'demo-nav__item--active' : ''}`} onClick={() => goToTab('locations')}>
-                  <div className="demo-nav__icon-pill">
-                    <MatIcon name="explore" />
-                  </div>
-                  <span>Ubicaciones</span>
-                </button>
-                <button className="demo-nav__scan" onClick={() => pushScreen('scanner')} title="Escanear VoxStation">
-                  <MatIcon name="qr_code_scanner" style={{ fontSize: 26 }} />
-                </button>
-                <button className={`demo-nav__item ${screen === 'points' ? 'demo-nav__item--active' : ''}`} onClick={() => goToTab('points')}>
-                  <div className="demo-nav__icon-pill">
-                    <MatIcon name="stars" />
-                  </div>
-                  <span>Puntos</span>
-                </button>
-                <button className={`demo-nav__item ${screen === 'profile' ? 'demo-nav__item--active' : ''}`} onClick={() => goToTab('profile')}>
-                  <div className="demo-nav__icon-pill">
-                    <MatIcon name="person" />
-                  </div>
-                  <span>Perfil</span>
-                </button>
-              </div>
-            )}
+        <div className="demo-phone">
+          <div className="demo-phone__notch" />
+          <div className="demo-phone__screen">
+            <div className="demo-app">
+              {renderScreen()}
 
-            {/* Toast */}
-            {toast && <div className="demo-toast">{toast}</div>}
+              {/* Bottom Navigation */}
+              {showNav && (
+                <div className="demo-nav">
+                  <button className={`demo-nav__item ${screen === 'home' ? 'demo-nav__item--active' : ''}`} onClick={() => goToTab('home')}>
+                    <div className="demo-nav__icon-pill">
+                      <MatIcon name="home" />
+                    </div>
+                    <span>Inicio</span>
+                  </button>
+                  <button className={`demo-nav__item ${screen === 'locations' ? 'demo-nav__item--active' : ''}`} onClick={() => goToTab('locations')}>
+                    <div className="demo-nav__icon-pill">
+                      <MatIcon name="explore" />
+                    </div>
+                    <span>Ubicaciones</span>
+                  </button>
+                  <button className="demo-nav__scan" onClick={handleStartScan} title="Escanear VoxStation">
+                    <MatIcon name="qr_code_scanner" style={{ fontSize: 26 }} />
+                  </button>
+                  <button className={`demo-nav__item ${screen === 'points' ? 'demo-nav__item--active' : ''}`} onClick={() => goToTab('points')}>
+                    <div className="demo-nav__icon-pill">
+                      <MatIcon name="stars" />
+                    </div>
+                    <span>Puntos</span>
+                  </button>
+                  <button className={`demo-nav__item ${screen === 'profile' ? 'demo-nav__item--active' : ''}`} onClick={() => goToTab('profile')}>
+                    <div className="demo-nav__icon-pill">
+                      <MatIcon name="person" />
+                    </div>
+                    <span>Perfil</span>
+                  </button>
+                </div>
+              )}
 
-            {/* Confirm Modal */}
-            {showConfirm && (
-              <div className="demo-confirm">
-                <div className="demo-confirm__box">
-                  <h3 className="demo-confirm__title">{confirmText.title}</h3>
-                  <p className="demo-confirm__desc">{confirmText.desc}</p>
-                  <div className="demo-confirm__actions">
-                    <button className="demo-confirm__btn demo-confirm__btn--cancel" onClick={() => setShowConfirm(false)}>Cancelar</button>
-                    <button className="demo-confirm__btn demo-confirm__btn--ok" onClick={() => confirmAction?.()}>Confirmar</button>
+              {/* Toast */}
+              {toast && <div className="demo-toast">{toast}</div>}
+
+              {/* Confirm Modal */}
+              {showConfirm && (
+                <div className="demo-confirm">
+                  <div className="demo-confirm__box">
+                    <h3 className="demo-confirm__title">{confirmText.title}</h3>
+                    <p className="demo-confirm__desc">{confirmText.desc}</p>
+                    <div className="demo-confirm__actions">
+                      <button className="demo-confirm__btn demo-confirm__btn--cancel" onClick={() => setShowConfirm(false)}>Cancelar</button>
+                      <button className="demo-confirm__btn demo-confirm__btn--ok" onClick={() => confirmAction?.()}>Confirmar</button>
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* QR Code Modal */}
-            {showQR && (
-              <div className="demo-qr-modal">
-                <div className="demo-qr-modal__code">
-                  <div className="demo-qr-modal__qr-grid">
-                    {qrPattern.map((cell, i) => (
-                      <div key={i} className={`demo-qr-modal__qr-cell ${cell === 0 ? 'demo-qr-modal__qr-cell--empty' : ''}`} />
-                    ))}
+              {/* QR Code Modal */}
+              {showQR && (
+                <div className="demo-qr-modal">
+                  <div className="demo-qr-modal__code">
+                    <div className="demo-qr-modal__qr-grid">
+                      {qrPattern.map((cell, i) => (
+                        <div key={i} className={`demo-qr-modal__qr-cell ${cell === 0 ? 'demo-qr-modal__qr-cell--empty' : ''}`} />
+                      ))}
+                    </div>
                   </div>
+                  <div className="demo-qr-modal__text-code">EXV-4829</div>
+                  <div className="demo-qr-modal__timer">Expira en 5:00</div>
+                  <button className="demo-qr-modal__close" onClick={() => setShowQR(false)}>Cerrar</button>
                 </div>
-                <div className="demo-qr-modal__text-code">EXV-4829</div>
-                <div className="demo-qr-modal__timer">Expira en 5:00</div>
-                <button className="demo-qr-modal__close" onClick={() => setShowQR(false)}>Cerrar</button>
-              </div>
-            )}
+              )}
+            </div>
           </div>
         </div>
       </div>
     </div>
   )
-}
-
-/* ─── Scanner Auto-Connect Helper ───────────────── */
-function ScannerAutoConnect({ onConnect }: { onConnect: () => void }) {
-  useEffect(() => {
-    const t = setTimeout(onConnect, 3000)
-    return () => clearTimeout(t)
-  }, [onConnect])
-  return null
 }

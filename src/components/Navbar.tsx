@@ -13,7 +13,7 @@ export default function Navbar() {
 
   const links = [
     { href: '#como-funciona', label: 'Cómo funciona' },
-    { href: '#recompensas', label: 'Recompensas' },
+    { href: '#rEKOmpensas', label: 'REKOmpensas' },
     { href: '#impacto', label: 'Impacto' },
     { href: '#empresas', label: 'Para empresas' },
     { href: '#faq', label: 'Preguntas' },

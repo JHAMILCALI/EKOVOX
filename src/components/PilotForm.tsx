@@ -82,7 +82,7 @@ export default function PilotForm({
               <path d="M18 32l10 10 18-18" stroke="#00D68F" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round" />
             </svg>
             <h3>¡Te registraste en la lista!</h3>
-            <p>Te contactaremos cuando el piloto esté listo en tu zona. Gracias por sumarte a EXOVOX.</p>
+            <p>Te contactaremos cuando el piloto esté listo en tu zona. Gracias por sumarte a EKOVOX.</p>
             <button type="button" className="btn btn-primary" onClick={handleClose}>
               Cerrar
             </button>
@@ -91,7 +91,7 @@ export default function PilotForm({
           <>
             <h3 className="pilot-modal__title">Quiero participar en el piloto</h3>
             <p className="pilot-modal__desc">
-              Déjanos tus datos y te avisaremos cuando EXOVOX esté disponible en tu zona.
+              Déjanos tus datos y te avisaremos cuando EKOVOX esté disponible en tu zona.
             </p>
 
             <form onSubmit={handleSubmit} className="pilot-form">
@@ -147,7 +147,7 @@ export default function PilotForm({
               </div>
 
               <div className="form-group">
-                <label>¿Dónde usarías EXOVOX?</label>
+                <label>¿Dónde usarías EKOVOX?</label>
                 <div className="pilot-places">
                   {usageLocations.map((p) => (
                     <label key={p} className={`pilot-place-chip ${form.places.includes(p) ? 'pilot-place-chip--active' : ''}`}>
@@ -170,7 +170,7 @@ export default function PilotForm({
                   checked={form.consent}
                   onChange={(e) => setForm({ ...form, consent: e.target.checked })}
                 />
-                <span>Acepto que EXOVOX use estos datos para contactarme sobre el piloto.</span>
+                <span>Acepto que EKOVOX use estos datos para contactarme sobre el piloto.</span>
               </label>
 
               <button

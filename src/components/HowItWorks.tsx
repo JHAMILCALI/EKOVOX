@@ -4,7 +4,7 @@ const steps = [
   {
     num: '01',
     title: 'Escanea',
-    desc: 'Abre EXOVOX y escanea el QR de la VoxStation.',
+    desc: 'Abre EKOVOX y escanea el QR de la VoxStation.',
     icon: (
       <svg viewBox="0 0 56 56" fill="none" aria-hidden="true">
         <rect x="4" y="4" width="48" height="48" rx="12" fill="rgba(255,184,0,0.1)" />
@@ -39,7 +39,7 @@ const steps = [
   {
     num: '03',
     title: 'Gana y canjea',
-    desc: 'Recibe puntos, revisa tu impacto y elige una recompensa disponible.',
+    desc: 'Recibe puntos, revisa tu impacto y elige una rEKOmpensa disponible.',
     icon: (
       <svg viewBox="0 0 56 56" fill="none" aria-hidden="true">
         <rect x="4" y="4" width="48" height="48" rx="12" fill="rgba(0,214,143,0.1)" />

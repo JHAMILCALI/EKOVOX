@@ -1,10 +1,10 @@
-# EXOVOX - Especificación de la app móvil
+# EKOVOX - Especificación de la app móvil
 
 > **Tu reciclaje tiene voz.**
 
 ## 1. Propósito
 
-La app EXOVOX permite que una persona se identifique ante una VoxStation, reciba puntos por envases físicamente aceptados, encuentre estaciones y canjee recompensas. Es la interfaz personal de un sistema mayor compuesto por estaciones IoT, backend transaccional, panel operativo y cadena de valorización.
+La app EKOVOX permite que una persona se identifique ante una VoxStation, reciba puntos por envases físicamente aceptados, encuentre estaciones y canjee rEKOmpensas. Es la interfaz personal de un sistema mayor compuesto por estaciones IoT, backend transaccional, panel operativo y cadena de valorización.
 
 La app no decide por sí sola si una botella es válida. La estación realiza la validación física y el backend registra el resultado de manera segura.
 
@@ -19,7 +19,7 @@ La app no decide por sí sola si una botella es válida. La estación realiza la
 - lector QR para iniciar una sesión;
 - sesión de reciclaje en tiempo real;
 - saldo y movimientos de puntos;
-- catálogo y detalle de recompensas;
+- catálogo y detalle de rEKOmpensas;
 - reserva/canje y cupón dinámico;
 - historial de reciclaje y canjes;
 - impacto personal;
@@ -34,13 +34,13 @@ La app no decide por sí sola si una botella es válida. La estación realiza la
 - marketplace completo;
 - transferencias de puntos entre personas;
 - gamificación social pública;
-- reconocimiento de botellas con la cámara del teléfono;
+- rEKOnocimiento de botellas con la cámara del teléfono;
 - soporte para múltiples materiales en una misma estación;
-- rutas de recolección para operadores dentro de la app ciudadana;
+- rutas de rEKOlección para operadores dentro de la app ciudadana;
 - datos B2B y administración desde móvil;
 - blockchain o tokens negociables.
 
-## 3. Plataformas y recomendación tecnológica
+## 3. Plataformas y rEKOmendación tecnológica
 
 ### Cliente móvil
 
@@ -87,8 +87,8 @@ Alternativa válida: React Native si el equipo ya domina TypeScript. La decisió
 - operador de estación;
 - técnico de mantenimiento;
 - operador de retiro;
-- administrador EXOVOX;
-- aliado de recompensas;
+- administrador EKOVOX;
+- aliado de rEKOmpensas;
 - analista de campaña;
 - auditor de impacto.
 
@@ -98,7 +98,7 @@ La aplicación ciudadana no debe incluir menús ocultos de administración.
 
 ### Camila, 20, estudiante
 
-Quiere reciclar las botellas que consume en el campus y obtener descuentos útiles. Necesita una experiencia rápida, instrucciones claras y recompensas alcanzables.
+Quiere reciclar las botellas que consume en el campus y obtener descuentos útiles. Necesita una experiencia rápida, instrucciones claras y rEKOmpensas alcanzables.
 
 ### Diego, 27, joven profesional
 
@@ -112,7 +112,7 @@ No conoce los tipos de plástico. Necesita que la estación explique por qué ac
 
 1. **Primero la acción:** abrir, escanear y reciclar con pocos pasos.
 2. **Estado visible:** la persona siempre sabe si la estación está conectada, validando, aceptando o rechazando.
-3. **Recompensa transparente:** puntos, vigencia y condiciones se muestran sin letra escondida.
+3. **REKOmpensa transparente:** puntos, vigencia y condiciones se muestran sin letra escondida.
 4. **Error recuperable:** cada rechazo explica qué hacer.
 5. **Privacidad por defecto:** ubicación y notificaciones son opcionales y se solicitan cuando aportan valor.
 6. **Accesibilidad:** contraste, texto escalable, lector de pantalla, vibración y señales no basadas solo en color.
@@ -167,7 +167,7 @@ Splash
         │   └── Resumen
         ├── Puntos
         │   ├── Saldo y movimientos
-        │   ├── Recompensas
+        │   ├── REKOmpensas
         │   ├── Detalle
         │   ├── Confirmar canje
         │   └── Mis cupones
@@ -284,9 +284,9 @@ El resumen muestra:
 - ubicación y hora;
 - enlace de ayuda si existe discrepancia.
 
-### 9.6 Canjear recompensa
+### 9.6 Canjear rEKOmpensa
 
-1. La persona abre una recompensa.
+1. La persona abre una rEKOmpensa.
 2. Ve aliado, costo en puntos, existencia, ubicación, vigencia, restricciones y política de devolución.
 3. Toca “Canjear”.
 4. Una pantalla de confirmación informa que los puntos se descontarán.
@@ -304,7 +304,7 @@ Nunca usar una imagen estática de cupón como única prueba.
 
 Contenido:
 
-- logo EXOVOX;
+- logo EKOVOX;
 - versión;
 - carga silenciosa de configuración remota;
 - aviso de mantenimiento;
@@ -333,7 +333,7 @@ Jerarquía:
 - estación más cercana o acceso al mapa;
 - reto/campaña activa claramente etiquetada;
 - actividad reciente;
-- acceso a recompensa destacada.
+- acceso a rEKOmpensa destacada.
 
 No convertir la pantalla en un muro publicitario.
 
@@ -356,7 +356,7 @@ No convertir la pantalla en un muro publicitario.
 - estado y última telemetría;
 - PET aceptado y restricciones;
 - accesibilidad;
-- recompensas/campañas especiales;
+- rEKOmpensas/campañas especiales;
 - botón navegar;
 - botón reportar problema.
 
@@ -389,7 +389,7 @@ No convertir la pantalla en un muro publicitario.
 - filtros: ganados, usados, ajustes, vencidos;
 - enlace a reglas del programa.
 
-### 10.9 Recompensas
+### 10.9 REKOmpensas
 
 - categorías y búsqueda;
 - costo en puntos;
@@ -558,10 +558,10 @@ La cámara interna debe encuadrar únicamente el objeto y el compartimento. No d
 ## 14. Arquitectura de eventos
 
 ```text
-App ──HTTPS/WebSocket── API EXOVOX ──PostgreSQL/Redis
+App ──HTTPS/WebSocket── API EKOVOX ──PostgreSQL/Redis
                             │
                             ├── Motor de puntos
-                            ├── Recompensas
+                            ├── REKOmpensas
                             ├── Notificaciones
                             ├── Analítica agregada
                             └── Servicio de sesiones
@@ -621,7 +621,7 @@ El servidor valida firma, secuencia, duplicados, sesión y reglas antes de acred
 - `material_types`;
 - `fraud_signals`.
 
-### Puntos y recompensas
+### Puntos y rEKOmpensas
 
 - `wallets`;
 - `points_ledger`;
@@ -683,7 +683,7 @@ El servidor valida firma, secuencia, duplicados, sesión y reglas antes de acred
 - `GET /v1/wallet`
 - `GET /v1/wallet/ledger`
 
-### Recompensas
+### REKOmpensas
 
 - `GET /v1/rewards`
 - `GET /v1/rewards/{id}`
@@ -776,7 +776,7 @@ Nunca mostrar como definitivo un saldo que aún no fue confirmado por el libro m
 - operar cuenta y sesión;
 - acreditar puntos;
 - prevenir fraude;
-- entregar recompensas;
+- entregar rEKOmpensas;
 - brindar soporte;
 - medir impacto y desempeño de manera agregada;
 - enviar comunicaciones con consentimiento.
@@ -799,9 +799,9 @@ Nunca mostrar como definitivo un saldo que aún no fue confirmado por el libro m
 - conocer versiones de términos aceptadas;
 - contactar a privacidad/soporte.
 
-## 21. Recompensas y reglas comerciales
+## 21. REKOmpensas y reglas comerciales
 
-Cada recompensa debe definir:
+Cada rEKOmpensa debe definir:
 
 - aliado responsable;
 - descripción y valor;
@@ -826,7 +826,7 @@ Tipos permitidos:
 - cupón próximo a vencer;
 - puntos próximos a vencer;
 - estación favorita disponible o temporalmente fuera de servicio;
-- nueva recompensa relevante;
+- nueva rEKOmpensa relevante;
 - reto aceptado;
 - seguridad de cuenta;
 - cambios materiales en términos.
@@ -835,7 +835,7 @@ Preferencias separadas:
 
 - transaccionales;
 - operativas;
-- recompensas;
+- rEKOmpensas;
 - marketing.
 
 No usar notificaciones de culpa ni afirmar un impacto no verificado.
@@ -852,8 +852,8 @@ instalación
 -> sesión iniciada
 -> primer envase aceptado
 -> segunda sesión
--> recompensa vista
--> recompensa canjeada
+-> rEKOmpensa vista
+-> rEKOmpensa canjeada
 -> cupón utilizado
 ```
 
@@ -901,13 +901,13 @@ No enviar a analítica:
 - errores por versión/dispositivo;
 - satisfacción posterior a sesión.
 
-### Recompensas
+### REKOmpensas
 
 - puntos emitidos;
 - pasivo de puntos;
 - tasa de canje;
 - tasa de uso de cupón;
-- costo por recompensa/acción;
+- costo por rEKOmpensa/acción;
 - stock vencido o agotado.
 
 ### Operación
@@ -1036,7 +1036,7 @@ No enviar a analítica:
 - integración con prototipo físico;
 - mapa;
 - rechazos completos;
-- recompensas y cupones;
+- rEKOmpensas y cupones;
 - soporte;
 - antifraude inicial;
 - privacidad y analítica.
@@ -1129,8 +1129,8 @@ Alertas críticas:
 
 ## 34. Documentos relacionados
 
-- Estrategia y modelo completo: `../01.PROJECT/EXOVOX-Proyecto.md`
-- Estructura de landing: `./EXOVOX-Landing-Page.md`
+- Estrategia y modelo completo: `../01.PROJECT/EKOVOX-Proyecto.md`
+- Estructura de landing: `./EKOVOX-Landing-Page.md`
 
 ## 35. Definición de terminado para el piloto
 
@@ -1138,7 +1138,7 @@ El producto estará listo para un piloto público cuando exista una cadena compl
 
 ```text
 cuenta -> QR -> sesión -> validación física -> evento firmado
--> puntos -> recompensa -> cupón usado
+-> puntos -> rEKOmpensa -> cupón usado
 -> retiro -> peso -> destino -> reporte agregado
 ```
 

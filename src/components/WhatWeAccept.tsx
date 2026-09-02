@@ -66,7 +66,7 @@ export default function WhatWeAccept() {
         </div>
 
         <div className="what-accept__cta">
-          <a href="#faq" className="btn btn-secondary">Ver preguntas frecuentes</a>
+          <a href="#faq" className="btn btn-sEKOndary">Ver preguntas frecuentes</a>
         </div>
       </div>
     </section>

@@ -33,7 +33,7 @@ export default function CircularChain() {
         </div>
 
         <blockquote className="chain-quote">
-          EXOVOX busca trabajar con recicladoras, recicladores y gestores autorizados.
+          EKOVOX busca trabajar con recicladoras, recicladores y gestores autorizados.
           La tecnología debe fortalecer su labor y mejorar la trazabilidad, no reemplazarlos
           ni invisibilizarlos.
         </blockquote>

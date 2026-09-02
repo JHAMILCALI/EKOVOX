@@ -31,7 +31,7 @@ const metrics = [
   },
   {
     icon: 'card_giftcard',
-    label: 'Recompensas canjeadas',
+    label: 'REKOmpensas canjeadas',
     target: 0,
     unit: 'medido en piloto',
     color: 'var(--ev-yellow)',
@@ -87,7 +87,7 @@ export default function Impact() {
         </div>
 
         <p className="impact__note">
-          EXOVOX no usa equivalencias como "CO₂ evitado" o "árboles salvados" sin una fuente y metodología pública verificable.
+          EKOVOX no usa equivalencias como "CO₂ evitado" o "árboles salvados" sin una fuente y metodología pública verificable.
         </p>
       </div>
     </section>

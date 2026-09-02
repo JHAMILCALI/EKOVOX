@@ -7,7 +7,7 @@ export default function Footer() {
             <rect x="0" y="4" width="26" height="26" rx="6" fill="url(#footer-logo-grad)" />
             <path d="M8 17l4 4 6-8" stroke="#0a0e27" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
             <text x="34" y="25" fontFamily="Outfit, sans-serif" fontWeight="800" fontSize="22" fill="white">
-              EXO<tspan fill="#FFB800">VOX</tspan>
+              EKO<tspan fill="#FFB800">VOX</tspan>
             </text>
             <defs>
               <linearGradient id="footer-logo-grad" x1="0" y1="4" x2="26" y2="30" gradientUnits="userSpaceOnUse">
@@ -28,7 +28,7 @@ export default function Footer() {
             <h4>Secciones</h4>
             <ul>
               <li><a href="#como-funciona">Cómo funciona</a></li>
-              <li><a href="#recompensas">Recompensas</a></li>
+              <li><a href="#rEKOmpensas">REKOmpensas</a></li>
               <li><a href="#impacto">Impacto</a></li>
               <li><a href="#empresas">Para empresas</a></li>
               <li><a href="#faq">Preguntas</a></li>
@@ -47,14 +47,14 @@ export default function Footer() {
             <h4>Contacto</h4>
             <ul>
               <li>
-                <a href="mailto:hola@exovox.com">hola@exovox.com</a>
+                <a href="mailto:hola@EKOVOX.com">hola@EKOVOX.com</a>
               </li>
             </ul>
           </div>
         </div>
 
         <div className="footer__bottom">
-          <p>© {new Date().getFullYear()} EXOVOX. Todos los derechos reservados.</p>
+          <p>© {new Date().getFullYear()} EKOVOX. Todos los derechos reservados.</p>
         </div>
       </div>
     </footer>
