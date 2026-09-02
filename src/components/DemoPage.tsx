@@ -52,45 +52,42 @@ const STATIONS: Station[] = [
 ]
 
 const REWARDS: Reward[] = [
-  { id: 1, icon: '☕', name: 'Café gratis', partner: 'La Paz Coffee', cost: 80, stock: 'Disponible', stockColor: '#7DBD35', validity: 'Hasta 30/09', description: 'Un café americano o latte de tamaño regular en cualquier sucursal de La Paz Coffee.' },
-  { id: 2, icon: '🎬', name: '2x1 Cine', partner: 'Multicine', cost: 120, stock: 'Disponible', stockColor: '#7DBD35', validity: 'Hasta 15/10', description: 'Dos entradas por el precio de una en cualquier función regular de lunes a jueves.' },
-  { id: 3, icon: '🛒', name: 'Bs 10 descuento', partner: 'Supermercado Ketal', cost: 150, stock: 'Poco stock', stockColor: '#F7C62F', validity: 'Hasta 30/09', description: 'Descuento de Bs 10 en compras mayores a Bs 50 en cualquier sucursal Ketal.' },
-  { id: 4, icon: '📱', name: 'Recarga Bs 5', partner: 'Tigo', cost: 50, stock: 'Disponible', stockColor: '#7DBD35', validity: 'Hasta 31/10', description: 'Recarga de Bs 5 de saldo para tu línea Tigo. Se aplica en 24 horas.' },
-  { id: 5, icon: '🍕', name: 'Pizza personal', partner: 'Pizza Hut', cost: 200, stock: 'No elegible', stockColor: '#ff6b6b', validity: 'Hasta 30/09', description: 'Una pizza personal de un ingrediente en cualquier sucursal Pizza Hut La Paz.' },
-  { id: 6, icon: '🎟️', name: 'Entrada museo', partner: 'Museo Nacional', cost: 60, stock: 'Próximamente', stockColor: '#7c84a3', validity: 'Por confirmar', description: 'Entrada general al Museo Nacional de Arte, válida cualquier día de la semana.' },
+  { id: 1, icon: 'local_cafe', name: 'Café gratis', partner: 'La Paz Coffee', cost: 80, stock: 'Disponible', stockColor: '#7DBD35', validity: 'Hasta 30/09', description: 'Un café americano o latte de tamaño regular en cualquier sucursal de La Paz Coffee.' },
+  { id: 2, icon: 'movie', name: '2x1 Cine', partner: 'Multicine', cost: 120, stock: 'Disponible', stockColor: '#7DBD35', validity: 'Hasta 15/10', description: 'Dos entradas por el precio de una en cualquier función regular de lunes a jueves.' },
+  { id: 3, icon: 'shopping_cart', name: 'Bs 10 descuento', partner: 'Supermercado Ketal', cost: 150, stock: 'Poco stock', stockColor: '#F7C62F', validity: 'Hasta 30/09', description: 'Descuento de Bs 10 en compras mayores a Bs 50 en cualquier sucursal Ketal.' },
+  { id: 4, icon: 'smartphone', name: 'Recarga Bs 5', partner: 'Tigo', cost: 50, stock: 'Disponible', stockColor: '#7DBD35', validity: 'Hasta 31/10', description: 'Recarga de Bs 5 de saldo para tu línea Tigo. Se aplica en 24 horas.' },
+  { id: 5, icon: 'local_pizza', name: 'Pizza personal', partner: 'Pizza Hut', cost: 200, stock: 'No elegible', stockColor: '#ff6b6b', validity: 'Hasta 30/09', description: 'Una pizza personal de un ingrediente en cualquier sucursal Pizza Hut La Paz.' },
+  { id: 6, icon: 'confirmation_number', name: 'Entrada museo', partner: 'Museo Nacional', cost: 60, stock: 'Próximamente', stockColor: '#7c84a3', validity: 'Por confirmar', description: 'Entrada general al Museo Nacional de Arte, válida cualquier día de la semana.' },
 ]
 
 const ONBOARDING_SLIDES = [
-  { icon: '♻️', title: 'Recicla botellas PET', desc: 'Deposita tus botellas vacías en una VoxStation cerca de ti y contribuye al reciclaje en La Paz.' },
-  { icon: '📱', title: 'Escanea una VoxStation', desc: 'Abre la app, escanea el QR de la estación y comienza a depositar envases uno a uno.' },
-  { icon: '⭐', title: 'Suma puntos y canjea', desc: 'Cada botella aceptada suma VoxPuntos que puedes canjear por beneficios de empresas aliadas.' },
-  { icon: '🌍', title: 'Sigue tu impacto', desc: 'Conoce cuántos envases has reciclado, el peso recuperado y el destino del material.' },
+  { icon: 'recycling', title: 'Recicla botellas PET', desc: 'Deposita tus botellas vacías en una VoxStation cerca de ti y contribuye al reciclaje en La Paz.' },
+  { icon: 'qr_code_scanner', title: 'Escanea una VoxStation', desc: 'Abre la app, escanea el QR de la estación y comienza a depositar envases uno a uno.' },
+  { icon: 'stars', title: 'Suma puntos y canjea', desc: 'Cada botella aceptada suma VoxPuntos que puedes canjear por beneficios de empresas aliadas.' },
+  { icon: 'public', title: 'Sigue tu impacto', desc: 'Conoce cuántos envases has reciclado, el peso recuperado y el destino del material.' },
 ]
 
-/* ─── Icons (inline SVG) ────────────────────────── */
-const IconHome = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
-const IconMap = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-const IconStar = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v12M6 12h12"/></svg>
-const IconUser = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-const IconQR = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/><path d="M21 14h-3v3h3"/><path d="M18 20h3v-3"/></svg>
-const IconBack = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-const IconBell = () => <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
-const IconChevron = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-const IconSearch = () => <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+/* ─── Material Symbols Helper ───────────────────── */
+function MatIcon({ name, className = '', style }: { name: string; className?: string; style?: React.CSSProperties }) {
+  return <span className={`material-symbols-rounded ${className}`} style={style} aria-hidden="true">{name}</span>
+}
 
 /* ─── Component ─────────────────────────────────── */
 export default function DemoPage() {
   // Navigation state
   const [screen, setScreen] = useState<Screen>('splash')
   const [, setScreenStack] = useState<Screen[]>([])
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
+  const [isLoggedIn, setIsLoggedIn] = useState(true)
 
   // App state
   const [points, setPoints] = useState(150)
+  const [showBalance, setShowBalance] = useState(true)
   const [totalDeposits, setTotalDeposits] = useState(20)
   const [onboardingPage, setOnboardingPage] = useState(0)
+  /* Preserved auth state for future demo activation:
   const [authMode, setAuthMode] = useState<'phone' | 'email'>('phone')
   const [authStep, setAuthStep] = useState<'input' | 'code' | 'profile'>('input')
+  */
   const [locationView, setLocationView] = useState<'map' | 'list'>('list')
   const [pointsTab, setPointsTab] = useState<'movements' | 'rewards'>('movements')
   const [selectedStation, setSelectedStation] = useState<Station | null>(null)
@@ -200,7 +197,7 @@ export default function DemoPage() {
       depositTimerRef.current = setTimeout(() => {
         if (cancelled) return
         // Validating
-        setSessionEvents(prev => [...prev, { type: 'validating', message: 'Validando...' }])
+        setSessionEvents(prev => [...prev, { type: 'validating', message: 'Validando envase...' }])
 
         depositTimerRef.current = setTimeout(() => {
           if (cancelled) return
@@ -296,11 +293,13 @@ export default function DemoPage() {
       case 'onboarding':
         return (
           <div className="demo-screen demo-onboarding" onTouchStart={onTouchStart} onTouchEnd={onTouchEnd}>
-            <button className="demo-onboarding__skip" onClick={() => { setScreen('auth'); setAuthStep('input') }}>
+            <button className="demo-onboarding__skip" onClick={() => { setIsLoggedIn(true); goToTab('home') }}>
               Omitir
             </button>
             <div className="demo-onboarding__slides" key={onboardingPage}>
-              <div className="demo-onboarding__icon">{ONBOARDING_SLIDES[onboardingPage].icon}</div>
+              <div className="demo-onboarding__icon-container">
+                <MatIcon name={ONBOARDING_SLIDES[onboardingPage].icon} className="demo-onboarding__icon-symbol" />
+              </div>
               <h2 className="demo-onboarding__title">{ONBOARDING_SLIDES[onboardingPage].title}</h2>
               <p className="demo-onboarding__desc">{ONBOARDING_SLIDES[onboardingPage].desc}</p>
             </div>
@@ -311,14 +310,14 @@ export default function DemoPage() {
             </div>
             <button className="demo-onboarding__btn" onClick={() => {
               if (onboardingPage < 3) setOnboardingPage(p => p + 1)
-              else { setScreen('auth'); setAuthStep('input') }
+              else { setIsLoggedIn(true); goToTab('home') }
             }}>
               {onboardingPage < 3 ? 'Siguiente' : 'Comenzar'}
             </button>
           </div>
         )
 
-      // ─── AUTH ──────────────────────────────
+      /* ─── AUTH (PANTALLAS COMENTADAS PARA LA DEMO) ──────────────
       case 'auth':
         return (
           <div className="demo-screen demo-auth">
@@ -369,35 +368,108 @@ export default function DemoPage() {
             </>}
           </div>
         )
+      ──────────────────────────────────────────────────────────── */
 
       // ─── HOME ──────────────────────────────
       case 'home':
         return (
           <div className="demo-screen demo-home">
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-              <div>
-                <h1 className="demo-home__greeting">{isLoggedIn ? '¡Hola, Camila!' : '¡Hola, Visitante!'}</h1>
-                <p className="demo-home__date">1 septiembre, 2026</p>
+            {/* Top Header */}
+            <div className="demo-home__header">
+              <div className="demo-home__header-left">
+                <button className="demo-home__profile-circle" onClick={() => goToTab('profile')} title="Ver perfil">
+                  <MatIcon name="person" style={{ fontSize: 22 }} />
+                </button>
+                <div className="demo-home__user-titles">
+                  <span className="demo-home__greeting-sub">Buenas noches</span>
+                  <h1 className="demo-home__greeting-name">{isLoggedIn ? 'Camila' : 'Visitante'}</h1>
+                </div>
               </div>
-              <button className="demo-header__action" onClick={() => pushScreen('notifications')}>
-                <IconBell />
+
+              <div className="demo-home__header-right">
+                <button className="demo-home__action-circle" onClick={() => showToast('Centro de soporte EXOVOX')} title="Soporte">
+                  <MatIcon name="support_agent" style={{ fontSize: 20 }} />
+                </button>
+                <button className="demo-home__action-circle demo-home__action-circle--badge" onClick={() => pushScreen('notifications')} title="Notificaciones">
+                  <MatIcon name="notifications" style={{ fontSize: 20 }} />
+                  <span className="demo-home__badge-dot" />
+                </button>
+              </div>
+            </div>
+
+            {/* Large Rounded Balance Card */}
+            <div className="demo-balance-card">
+              <div className="demo-balance-card__top">
+                <div className="demo-balance-card__brand">
+                  EXO<span>VOX</span>
+                </div>
+                <div className="demo-balance-card__id">EVX-60558</div>
+              </div>
+
+              <div className="demo-balance-card__bottom">
+                <div className="demo-balance-card__info">
+                  <span className="demo-balance-card__label">Tu saldo disponible:</span>
+                  <div className="demo-balance-card__amount-row">
+                    <span className="demo-balance-card__unit">Pts</span>
+                    <span className="demo-balance-card__amount">{showBalance ? points : '••••'}</span>
+                  </div>
+                </div>
+
+                <button
+                  className={`demo-pill-toggle ${showBalance ? 'demo-pill-toggle--on' : 'demo-pill-toggle--off'}`}
+                  onClick={() => setShowBalance(!showBalance)}
+                  title={showBalance ? 'Ocultar saldo' : 'Mostrar saldo'}
+                >
+                  <span className="demo-pill-toggle__circle" />
+                </button>
+              </div>
+            </div>
+
+            {/* 3 Quick Action Cards */}
+            <div className="demo-quick-grid">
+              <div className="demo-quick-card" onClick={() => pushScreen('scanner')}>
+                <div className="demo-quick-card__icon-wrap demo-quick-card__icon-wrap--green">
+                  <MatIcon name="qr_code_scanner" />
+                </div>
+                <span className="demo-quick-card__title">Escanear</span>
+                <span className="demo-quick-card__subtitle">Depositar</span>
+              </div>
+
+              <div className="demo-quick-card" onClick={() => goToTab('locations')}>
+                <div className="demo-quick-card__icon-wrap demo-quick-card__icon-wrap--teal">
+                  <MatIcon name="explore" />
+                </div>
+                <span className="demo-quick-card__title">Estaciones</span>
+                <span className="demo-quick-card__subtitle">Ver mapa</span>
+              </div>
+
+              <div className="demo-quick-card" onClick={() => goToTab('points')}>
+                <div className="demo-quick-card__icon-wrap demo-quick-card__icon-wrap--yellow">
+                  <MatIcon name="card_giftcard" />
+                </div>
+                <span className="demo-quick-card__title">Canjear</span>
+                <span className="demo-quick-card__subtitle">Beneficios</span>
+              </div>
+            </div>
+
+            {/* Two Wide Pill Action Buttons */}
+            <div className="demo-pill-actions">
+              <button className="demo-pill-btn demo-pill-btn--primary" onClick={() => pushScreen('scanner')}>
+                <MatIcon name="qr_code_scanner" style={{ fontSize: 20 }} />
+                <span>Escanear QR</span>
+              </button>
+              <button className="demo-pill-btn demo-pill-btn--secondary" onClick={() => goToTab('locations')}>
+                <MatIcon name="near_me" style={{ fontSize: 20 }} />
+                <span>Buscar VoxStation</span>
               </button>
             </div>
 
-            <div className="demo-balance-card">
-              <div className="demo-balance-card__label">VoxPuntos</div>
-              <div className="demo-balance-card__amount">{points}</div>
-              <div className="demo-balance-card__unit">puntos disponibles</div>
-            </div>
-
-            <button className="demo-scan-btn" onClick={() => pushScreen('scanner')}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="3" height="3"/></svg>
-              Escanear VoxStation
-            </button>
-
+            {/* Nearby Station Section */}
             <div className="demo-section-label">Estación cercana</div>
             <div className="demo-station-card" onClick={() => { setSelectedStation(STATIONS[0]); pushScreen('station-detail') }}>
-              <div className="demo-station-card__icon">📍</div>
+              <div className="demo-station-card__icon">
+                <MatIcon name="location_on" style={{ fontSize: 22 }} />
+              </div>
               <div className="demo-station-card__info">
                 <div className="demo-station-card__name">{STATIONS[0].name}</div>
                 <div className="demo-station-card__meta">{STATIONS[0].distance} · {STATIONS[0].address}</div>
@@ -405,8 +477,12 @@ export default function DemoPage() {
               <span className={`demo-station-card__status ${statusClass(STATIONS[0].status)}`}>{STATIONS[0].statusText}</span>
             </div>
 
+            {/* Challenge Card */}
             <div className="demo-challenge">
-              <div className="demo-challenge__tag">🎯 Reto activo</div>
+              <div className="demo-challenge__tag">
+                <MatIcon name="flag" style={{ fontSize: 14, marginRight: 4 }} />
+                Reto activo
+              </div>
               <div className="demo-challenge__title">Reto Septiembre</div>
               <div className="demo-challenge__desc">Recicla 20 botellas este mes</div>
               <div className="demo-challenge__bar">
@@ -415,14 +491,17 @@ export default function DemoPage() {
               <div className="demo-challenge__progress">{Math.min(totalDeposits, 20)}/20</div>
             </div>
 
+            {/* Recent Activity */}
             <div className="demo-section-label">Actividad reciente</div>
             {[
-              { icon: '♻️', name: 'Sesión de reciclaje', pts: '+45', time: 'Hace 2 días', earn: true },
-              { icon: '☕', name: 'Canje: Café gratis', pts: '-80', time: 'Hace 5 días', earn: false },
-              { icon: '♻️', name: 'Sesión de reciclaje', pts: '+30', time: 'Hace 1 semana', earn: true },
+              { icon: 'recycling', name: 'Sesión de reciclaje', pts: '+45', time: 'Hace 2 días', earn: true },
+              { icon: 'local_cafe', name: 'Canje: Café gratis', pts: '-80', time: 'Hace 5 días', earn: false },
+              { icon: 'recycling', name: 'Sesión de reciclaje', pts: '+30', time: 'Hace 1 semana', earn: true },
             ].map((a, i) => (
               <div key={i} className="demo-activity">
-                <div className={`demo-activity__icon ${a.earn ? 'demo-activity__icon--earn' : 'demo-activity__icon--spend'}`}>{a.icon}</div>
+                <div className={`demo-activity__icon ${a.earn ? 'demo-activity__icon--earn' : 'demo-activity__icon--spend'}`}>
+                  <MatIcon name={a.icon} style={{ fontSize: 20 }} />
+                </div>
                 <div className="demo-activity__info">
                   <div className="demo-activity__name">{a.name}</div>
                   <div className="demo-activity__time">{a.time}</div>
@@ -431,14 +510,17 @@ export default function DemoPage() {
               </div>
             ))}
 
-            <div style={{ marginTop: 16 }}>
+            {/* Featured Reward */}
+            <div style={{ marginTop: 12 }}>
               <div className="demo-reward-card" onClick={() => { setSelectedReward(REWARDS[0]); pushScreen('reward-detail') }}>
-                <div className="demo-reward-card__icon">☕</div>
+                <div className="demo-reward-card__icon">
+                  <MatIcon name="local_cafe" style={{ fontSize: 22 }} />
+                </div>
                 <div className="demo-reward-card__info">
                   <div className="demo-reward-card__name">Recompensa destacada</div>
                   <div className="demo-reward-card__partner">Café gratis · 80 pts</div>
                 </div>
-                <IconChevron />
+                <MatIcon name="chevron_right" style={{ color: 'var(--ev-text-muted)' }} />
               </div>
             </div>
           </div>
@@ -451,13 +533,19 @@ export default function DemoPage() {
             <h1 className="demo-home__greeting" style={{ marginBottom: 16 }}>Ubicaciones</h1>
 
             <div className="demo-locations__search-wrap">
-              <span className="demo-locations__search-icon"><IconSearch /></span>
-              <input className="demo-locations__search" placeholder="Buscar zona o lugar..." readOnly style={{ paddingLeft: 40 }} />
+              <span className="demo-locations__search-icon"><MatIcon name="search" style={{ fontSize: 20 }} /></span>
+              <input className="demo-locations__search" placeholder="Buscar zona o lugar..." readOnly style={{ paddingLeft: 42 }} />
             </div>
 
             <div className="demo-locations__toggle">
-              <button className={`demo-locations__toggle-btn ${locationView === 'map' ? 'demo-locations__toggle-btn--active' : ''}`} onClick={() => setLocationView('map')}>🗺 Mapa</button>
-              <button className={`demo-locations__toggle-btn ${locationView === 'list' ? 'demo-locations__toggle-btn--active' : ''}`} onClick={() => setLocationView('list')}>📋 Lista</button>
+              <button className={`demo-locations__toggle-btn ${locationView === 'map' ? 'demo-locations__toggle-btn--active' : ''}`} onClick={() => setLocationView('map')}>
+                <MatIcon name="map" style={{ fontSize: 18, marginRight: 6 }} />
+                Mapa
+              </button>
+              <button className={`demo-locations__toggle-btn ${locationView === 'list' ? 'demo-locations__toggle-btn--active' : ''}`} onClick={() => setLocationView('list')}>
+                <MatIcon name="format_list_bulleted" style={{ fontSize: 18, marginRight: 6 }} />
+                Lista
+              </button>
             </div>
 
             <div className="demo-filters">
@@ -482,7 +570,9 @@ export default function DemoPage() {
 
             {(locationView === 'list' ? STATIONS : []).map(s => (
               <div key={s.id} className="demo-station-card" onClick={() => { setSelectedStation(s); pushScreen('station-detail') }}>
-                <div className="demo-station-card__icon">📍</div>
+                <div className="demo-station-card__icon">
+                  <MatIcon name="location_on" style={{ fontSize: 22 }} />
+                </div>
                 <div className="demo-station-card__info">
                   <div className="demo-station-card__name">{s.name}</div>
                   <div className="demo-station-card__meta">{s.distance} · {s.address}</div>
@@ -499,7 +589,9 @@ export default function DemoPage() {
         return (
           <div className="demo-screen">
             <div className="demo-header">
-              <button className="demo-header__back" onClick={popScreen}><IconBack /></button>
+              <button className="demo-header__back" onClick={popScreen}>
+                <MatIcon name="arrow_back" style={{ fontSize: 22 }} />
+              </button>
               <span className="demo-header__title">{selectedStation.name}</span>
             </div>
             <div className="demo-detail">
@@ -508,15 +600,17 @@ export default function DemoPage() {
                 {selectedStation.statusText}
               </div>
               {[
-                { icon: '📍', label: 'Dirección', value: selectedStation.address },
-                { icon: '🏢', label: 'Anfitrión', value: selectedStation.host },
-                { icon: '🕐', label: 'Horario', value: selectedStation.hours },
-                { icon: '♻️', label: 'Material aceptado', value: selectedStation.material },
-                { icon: '♿', label: 'Accesibilidad', value: selectedStation.accessibility },
-                { icon: '🔄', label: 'Última actualización', value: selectedStation.lastUpdate },
+                { icon: 'location_on', label: 'Dirección', value: selectedStation.address },
+                { icon: 'corporate_fare', label: 'Anfitrión', value: selectedStation.host },
+                { icon: 'schedule', label: 'Horario', value: selectedStation.hours },
+                { icon: 'recycling', label: 'Material aceptado', value: selectedStation.material },
+                { icon: 'accessible', label: 'Accesibilidad', value: selectedStation.accessibility },
+                { icon: 'update', label: 'Última actualización', value: selectedStation.lastUpdate },
               ].map((r, i) => (
                 <div key={i} className="demo-detail__row">
-                  <span className="demo-detail__row-icon">{r.icon}</span>
+                  <span className="demo-detail__row-icon">
+                    <MatIcon name={r.icon} style={{ fontSize: 20 }} />
+                  </span>
                   <div>
                     <div className="demo-detail__row-label">{r.label}</div>
                     <div className="demo-detail__row-value">{r.value}</div>
@@ -524,8 +618,14 @@ export default function DemoPage() {
                 </div>
               ))}
               <div className="demo-detail__actions">
-                <button className="demo-detail__nav-btn" onClick={() => showToast('Navegación no disponible en demo')}>🧭 Navegar</button>
-                <button className="demo-detail__report" onClick={() => showToast('Reporte enviado (demo)')}>Reportar</button>
+                <button className="demo-detail__nav-btn" onClick={() => showToast('Navegación no disponible en demo')}>
+                  <MatIcon name="near_me" style={{ fontSize: 18, marginRight: 6 }} />
+                  Navegar
+                </button>
+                <button className="demo-detail__report" onClick={() => showToast('Reporte enviado (demo)')}>
+                  <MatIcon name="flag" style={{ fontSize: 18, marginRight: 6 }} />
+                  Reportar
+                </button>
               </div>
             </div>
           </div>
@@ -535,7 +635,9 @@ export default function DemoPage() {
       case 'scanner':
         return (
           <div className="demo-screen demo-scanner">
-            <button className="demo-scanner__close" onClick={popScreen}>✕</button>
+            <button className="demo-scanner__close" onClick={popScreen}>
+              <MatIcon name="close" style={{ fontSize: 22 }} />
+            </button>
             <div className="demo-scanner__frame">
               <div className="demo-scanner__corner demo-scanner__corner--tl" />
               <div className="demo-scanner__corner demo-scanner__corner--tr" />
@@ -584,7 +686,18 @@ export default function DemoPage() {
                 {sessionEvents.map((e, i) => (
                   <div key={i} className={`demo-session__event demo-session__event--${e.type}`}>
                     <span className="demo-session__event-icon">
-                      {e.type === 'idle' ? '🔄' : e.type === 'validating' ? '⏳' : e.type === 'accepted' ? '✅' : '❌'}
+                      <MatIcon
+                        name={
+                          e.type === 'idle'
+                            ? 'autorenew'
+                            : e.type === 'validating'
+                            ? 'hourglass_top'
+                            : e.type === 'accepted'
+                            ? 'check_circle'
+                            : 'cancel'
+                        }
+                        style={{ fontSize: 18 }}
+                      />
                     </span>
                     <span className="demo-session__event-text">{e.message}</span>
                     {e.points ? <span className="demo-session__event-pts">+{e.points}</span> : null}
@@ -605,7 +718,9 @@ export default function DemoPage() {
               <span className="demo-header__title">Resumen</span>
             </div>
             <div className="demo-summary">
-              <div className="demo-summary__check">✓</div>
+              <div className="demo-summary__check">
+                <MatIcon name="check" style={{ fontSize: 36, color: 'var(--navy-950)' }} />
+              </div>
               <h2 className="demo-summary__title">¡Sesión completada!</h2>
               <div className="demo-summary__stats">
                 <div className="demo-summary__stat">
@@ -645,7 +760,10 @@ export default function DemoPage() {
               <div className="demo-points__amount">{points}</div>
               <div className="demo-points__label">VoxPuntos</div>
             </div>
-            <p className="demo-points__expiry">⏳ Próximo vencimiento: 45 puntos el 30/11</p>
+            <p className="demo-points__expiry">
+              <MatIcon name="schedule" style={{ fontSize: 15, verticalAlign: 'middle', marginRight: 4 }} />
+              Próximo vencimiento: 45 puntos el 30/11
+            </p>
 
             <div className="demo-points__tabs">
               <button className={`demo-points__tab ${pointsTab === 'movements' ? 'demo-points__tab--active' : ''}`} onClick={() => setPointsTab('movements')}>Movimientos</button>
@@ -659,14 +777,16 @@ export default function DemoPage() {
                 ))}
               </div>
               {[
-                { icon: '♻️', desc: 'Sesión de reciclaje', date: '01/09', amount: '+45', earn: true },
-                { icon: '☕', desc: 'Café La Paz Coffee', date: '27/08', amount: '-80', earn: false },
-                { icon: '♻️', desc: 'Sesión de reciclaje', date: '25/08', amount: '+30', earn: true },
-                { icon: '🎁', desc: 'Bono primer depósito', date: '20/08', amount: '+15', earn: true },
-                { icon: '🛒', desc: 'Descuento supermercado', date: '18/08', amount: '-50', earn: false },
+                { icon: 'recycling', desc: 'Sesión de reciclaje', date: '01/09', amount: '+45', earn: true },
+                { icon: 'local_cafe', desc: 'Café La Paz Coffee', date: '27/08', amount: '-80', earn: false },
+                { icon: 'recycling', desc: 'Sesión de reciclaje', date: '25/08', amount: '+30', earn: true },
+                { icon: 'card_giftcard', desc: 'Bono primer depósito', date: '20/08', amount: '+15', earn: true },
+                { icon: 'shopping_cart', desc: 'Descuento supermercado', date: '18/08', amount: '-50', earn: false },
               ].map((tx, i) => (
                 <div key={i} className="demo-tx">
-                  <div className="demo-tx__icon" style={{ background: tx.earn ? 'rgba(93,174,50,0.12)' : 'rgba(243,154,34,0.12)' }}>{tx.icon}</div>
+                  <div className="demo-tx__icon" style={{ background: tx.earn ? 'rgba(93,174,50,0.15)' : 'rgba(243,154,34,0.15)' }}>
+                    <MatIcon name={tx.icon} style={{ fontSize: 20, color: tx.earn ? 'var(--lime-500)' : 'var(--orange-500)' }} />
+                  </div>
                   <div className="demo-tx__info">
                     <div className="demo-tx__desc">{tx.desc}</div>
                     <div className="demo-tx__date">{tx.date}</div>
@@ -680,7 +800,9 @@ export default function DemoPage() {
             {pointsTab === 'rewards' && <>
               {REWARDS.map(r => (
                 <div key={r.id} className="demo-reward-card" onClick={() => { setSelectedReward(r); pushScreen('reward-detail') }}>
-                  <div className="demo-reward-card__icon">{r.icon}</div>
+                  <div className="demo-reward-card__icon">
+                    <MatIcon name={r.icon} style={{ fontSize: 22 }} />
+                  </div>
                   <div className="demo-reward-card__info">
                     <div className="demo-reward-card__name">{r.name}</div>
                     <div className="demo-reward-card__partner">{r.partner}</div>
@@ -702,11 +824,15 @@ export default function DemoPage() {
         return (
           <div className="demo-screen">
             <div className="demo-header">
-              <button className="demo-header__back" onClick={popScreen}><IconBack /></button>
+              <button className="demo-header__back" onClick={popScreen}>
+                <MatIcon name="arrow_back" style={{ fontSize: 22 }} />
+              </button>
               <span className="demo-header__title">Recompensa</span>
             </div>
             <div className="demo-reward-detail">
-              <div className="demo-reward-detail__hero">{selectedReward.icon}</div>
+              <div className="demo-reward-detail__hero">
+                <MatIcon name={selectedReward.icon} style={{ fontSize: 44, color: 'var(--yellow-500)' }} />
+              </div>
               <div className="demo-reward-detail__name">{selectedReward.name}</div>
               <div className="demo-reward-detail__partner">{selectedReward.partner}</div>
               <div className="demo-reward-detail__cost">{selectedReward.cost}</div>
@@ -739,7 +865,9 @@ export default function DemoPage() {
         return (
           <div className="demo-screen">
             <div className="demo-header">
-              <button className="demo-header__back" onClick={popScreen}><IconBack /></button>
+              <button className="demo-header__back" onClick={popScreen}>
+                <MatIcon name="arrow_back" style={{ fontSize: 22 }} />
+              </button>
               <span className="demo-header__title">Mis cupones</span>
             </div>
             <div className="demo-pad-content">
@@ -750,7 +878,9 @@ export default function DemoPage() {
               </div>
               {couponsTab === 'available' && (
                 <div className="demo-coupon">
-                  <span className="demo-coupon__icon">☕</span>
+                  <span className="demo-coupon__icon">
+                    <MatIcon name="local_cafe" style={{ fontSize: 22, color: 'var(--yellow-500)' }} />
+                  </span>
                   <div className="demo-coupon__info">
                     <div className="demo-coupon__name">Café gratis · La Paz Coffee</div>
                     <div className="demo-coupon__expiry">Vence: 30/09/2026</div>
@@ -760,7 +890,9 @@ export default function DemoPage() {
               )}
               {couponsTab === 'used' && (
                 <div className="demo-coupon" style={{ opacity: 0.5 }}>
-                  <span className="demo-coupon__icon">🛒</span>
+                  <span className="demo-coupon__icon">
+                    <MatIcon name="shopping_cart" style={{ fontSize: 22 }} />
+                  </span>
                   <div className="demo-coupon__info">
                     <div className="demo-coupon__name">Bs 10 descuento · Ketal</div>
                     <div className="demo-coupon__expiry">Usado: 18/08/2026</div>
@@ -801,21 +933,27 @@ export default function DemoPage() {
               </div>
             </div>
             {[
-              { icon: '📊', label: 'Impacto personal', screen: 'impact' as Screen },
-              { icon: '📋', label: 'Historial de reciclaje', screen: 'history' as Screen },
-              { icon: '🎟️', label: 'Mis cupones', screen: 'coupons' as Screen },
-              { icon: '⚙️', label: 'Preferencias', screen: 'preferences' as Screen },
-              { icon: '🔒', label: 'Privacidad y datos', screen: 'privacy' as Screen },
-              { icon: '❓', label: 'Ayuda y soporte', screen: null },
+              { icon: 'analytics', label: 'Impacto personal', screen: 'impact' as Screen },
+              { icon: 'receipt_long', label: 'Historial de reciclaje', screen: 'history' as Screen },
+              { icon: 'confirmation_number', label: 'Mis cupones', screen: 'coupons' as Screen },
+              { icon: 'tune', label: 'Preferencias', screen: 'preferences' as Screen },
+              { icon: 'security', label: 'Privacidad y datos', screen: 'privacy' as Screen },
+              { icon: 'help_outline', label: 'Ayuda y soporte', screen: null },
             ].map((item, i) => (
               <div key={i} className="demo-menu-item" onClick={() => item.screen ? pushScreen(item.screen) : showToast('Soporte no disponible en demo')}>
-                <span className="demo-menu-item__icon">{item.icon}</span>
+                <span className="demo-menu-item__icon">
+                  <MatIcon name={item.icon} style={{ fontSize: 20 }} />
+                </span>
                 <span className="demo-menu-item__label">{item.label}</span>
-                <span className="demo-menu-item__arrow"><IconChevron /></span>
+                <span className="demo-menu-item__arrow">
+                  <MatIcon name="chevron_right" style={{ fontSize: 18 }} />
+                </span>
               </div>
             ))}
             <div className="demo-menu-item demo-menu-item--danger" onClick={() => showToast('Sesión cerrada (demo)')}>
-              <span className="demo-menu-item__icon">🚪</span>
+              <span className="demo-menu-item__icon">
+                <MatIcon name="logout" style={{ fontSize: 20 }} />
+              </span>
               <span className="demo-menu-item__label">Cerrar sesión</span>
             </div>
           </div>
@@ -826,7 +964,9 @@ export default function DemoPage() {
         return (
           <div className="demo-screen">
             <div className="demo-header">
-              <button className="demo-header__back" onClick={popScreen}><IconBack /></button>
+              <button className="demo-header__back" onClick={popScreen}>
+                <MatIcon name="arrow_back" style={{ fontSize: 22 }} />
+              </button>
               <span className="demo-header__title">Tu impacto</span>
             </div>
             <div className="demo-impact">
@@ -844,7 +984,10 @@ export default function DemoPage() {
                 <div className="demo-impact__bar" style={{ height: '85%' }}><span className="demo-impact__bar-label">Sep</span></div>
               </div>
 
-              <div className="demo-impact__streak">🔥 Racha: 3 semanas consecutivas</div>
+              <div className="demo-impact__streak">
+                <MatIcon name="local_fire_department" style={{ fontSize: 18, color: 'var(--orange-500)', verticalAlign: 'middle', marginRight: 4 }} />
+                Racha: 3 semanas consecutivas
+              </div>
               <div className="demo-impact__community">
                 <div style={{ fontSize: '0.85rem', color: 'var(--ev-text-bright)', marginBottom: 4 }}>Comunidad EXOVOX</div>
                 <div style={{ fontFamily: 'var(--font-heading)', fontSize: '1.4rem', fontWeight: 800, color: 'var(--lime-500)' }}>1,247</div>
@@ -860,7 +1003,9 @@ export default function DemoPage() {
         return (
           <div className="demo-screen">
             <div className="demo-header">
-              <button className="demo-header__back" onClick={popScreen}><IconBack /></button>
+              <button className="demo-header__back" onClick={popScreen}>
+                <MatIcon name="arrow_back" style={{ fontSize: 22 }} />
+              </button>
               <span className="demo-header__title">Historial</span>
             </div>
             <div className="demo-pad-content">
@@ -887,7 +1032,9 @@ export default function DemoPage() {
         return (
           <div className="demo-screen">
             <div className="demo-header">
-              <button className="demo-header__back" onClick={popScreen}><IconBack /></button>
+              <button className="demo-header__back" onClick={popScreen}>
+                <MatIcon name="arrow_back" style={{ fontSize: 22 }} />
+              </button>
               <span className="demo-header__title">Notificaciones</span>
             </div>
             <div className="demo-pad-content">
@@ -914,7 +1061,9 @@ export default function DemoPage() {
         return (
           <div className="demo-screen">
             <div className="demo-header">
-              <button className="demo-header__back" onClick={popScreen}><IconBack /></button>
+              <button className="demo-header__back" onClick={popScreen}>
+                <MatIcon name="arrow_back" style={{ fontSize: 22 }} />
+              </button>
               <span className="demo-header__title">Preferencias</span>
             </div>
             <div className="demo-pad-content">
@@ -937,20 +1086,32 @@ export default function DemoPage() {
         return (
           <div className="demo-screen">
             <div className="demo-header">
-              <button className="demo-header__back" onClick={popScreen}><IconBack /></button>
+              <button className="demo-header__back" onClick={popScreen}>
+                <MatIcon name="arrow_back" style={{ fontSize: 22 }} />
+              </button>
               <span className="demo-header__title">Privacidad y datos</span>
             </div>
             <div className="demo-pad-content">
               <div className="demo-section-label">Tus datos</div>
-              <button className="demo-privacy-btn" onClick={() => showToast('Descarga iniciada (demo)')}>📥 Descargar mis datos</button>
-              <button className="demo-privacy-btn" onClick={() => showToast('Abriendo política (demo)')}>📜 Política de privacidad</button>
-              <button className="demo-privacy-btn" onClick={() => showToast('Abriendo términos (demo)')}>📋 Términos de uso (v2.1)</button>
+              <button className="demo-privacy-btn" onClick={() => showToast('Descarga iniciada (demo)')}>
+                <MatIcon name="download" style={{ fontSize: 18, marginRight: 8 }} />
+                Descargar mis datos
+              </button>
+              <button className="demo-privacy-btn" onClick={() => showToast('Abriendo política (demo)')}>
+                <MatIcon name="policy" style={{ fontSize: 18, marginRight: 8 }} />
+                Política de privacidad
+              </button>
+              <button className="demo-privacy-btn" onClick={() => showToast('Abriendo términos (demo)')}>
+                <MatIcon name="description" style={{ fontSize: 18, marginRight: 8 }} />
+                Términos de uso (v2.1)
+              </button>
               <button className="demo-privacy-btn demo-privacy-btn--danger"
                 onClick={() => openConfirm('¿Eliminar cuenta?', 'Esta acción es irreversible. Se eliminarán todos tus datos.', () => {
                   setShowConfirm(false)
                   showToast('Cuenta eliminada (demo)')
                 })}>
-                🗑️ Eliminar mi cuenta
+                <MatIcon name="delete_forever" style={{ fontSize: 18, marginRight: 8 }} />
+                Eliminar mi cuenta
               </button>
             </div>
           </div>
@@ -968,7 +1129,8 @@ export default function DemoPage() {
     <div className="demo-page">
       <div className="demo-topbar">
         <Link to="/" className="demo-topbar__back">
-          <IconBack /> Volver
+          <MatIcon name="arrow_back" style={{ fontSize: 18 }} />
+          Volver
         </Link>
         <div className="demo-topbar__info">
           <h1 className="demo-topbar__title">EXOVOX Demo</h1>
@@ -986,19 +1148,31 @@ export default function DemoPage() {
             {showNav && (
               <div className="demo-nav">
                 <button className={`demo-nav__item ${screen === 'home' ? 'demo-nav__item--active' : ''}`} onClick={() => goToTab('home')}>
-                  <IconHome /><span>Inicio</span>
+                  <div className="demo-nav__icon-pill">
+                    <MatIcon name="home" />
+                  </div>
+                  <span>Inicio</span>
                 </button>
                 <button className={`demo-nav__item ${screen === 'locations' ? 'demo-nav__item--active' : ''}`} onClick={() => goToTab('locations')}>
-                  <IconMap /><span>Ubicaciones</span>
+                  <div className="demo-nav__icon-pill">
+                    <MatIcon name="explore" />
+                  </div>
+                  <span>Ubicaciones</span>
                 </button>
-                <button className="demo-nav__scan" onClick={() => pushScreen('scanner')}>
-                  <IconQR />
+                <button className="demo-nav__scan" onClick={() => pushScreen('scanner')} title="Escanear VoxStation">
+                  <MatIcon name="qr_code_scanner" style={{ fontSize: 26 }} />
                 </button>
                 <button className={`demo-nav__item ${screen === 'points' ? 'demo-nav__item--active' : ''}`} onClick={() => goToTab('points')}>
-                  <IconStar /><span>Puntos</span>
+                  <div className="demo-nav__icon-pill">
+                    <MatIcon name="stars" />
+                  </div>
+                  <span>Puntos</span>
                 </button>
                 <button className={`demo-nav__item ${screen === 'profile' ? 'demo-nav__item--active' : ''}`} onClick={() => goToTab('profile')}>
-                  <IconUser /><span>Perfil</span>
+                  <div className="demo-nav__icon-pill">
+                    <MatIcon name="person" />
+                  </div>
+                  <span>Perfil</span>
                 </button>
               </div>
             )}

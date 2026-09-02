@@ -17,7 +17,10 @@ export default function Footer() {
             </defs>
           </svg>
           <p className="footer__tagline">Tu reciclaje tiene voz.</p>
-          <p className="footer__location">📍 La Paz, Bolivia</p>
+          <p className="footer__location" style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
+            <span className="material-symbols-rounded" style={{ fontSize: 16, color: 'var(--lime-500)' }}>location_on</span>
+            La Paz, Bolivia
+          </p>
         </div>
 
         <div className="footer__links">

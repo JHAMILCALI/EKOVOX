@@ -2,42 +2,42 @@ import { useEffect, useRef, useState } from 'react'
 
 const metrics = [
   {
-    icon: '♻️',
+    icon: 'recycling',
     label: 'Envases aceptados',
     target: 0,
     unit: 'medido en piloto',
     color: 'var(--ev-green)',
   },
   {
-    icon: '⚖️',
+    icon: 'scale',
     label: 'Kg entregados a valorización',
     target: 0,
     unit: 'medido en piloto',
     color: 'var(--ev-yellow)',
   },
   {
-    icon: '📊',
+    icon: 'analytics',
     label: 'Material aprovechado',
     target: 0,
     unit: '% por verificar',
     color: 'var(--ev-coral)',
   },
   {
-    icon: '👥',
+    icon: 'group',
     label: 'Usuarios activos',
     target: 0,
     unit: 'medido en piloto',
     color: 'var(--ev-green)',
   },
   {
-    icon: '🎁',
+    icon: 'card_giftcard',
     label: 'Recompensas canjeadas',
     target: 0,
     unit: 'medido en piloto',
     color: 'var(--ev-yellow)',
   },
   {
-    icon: '🤝',
+    icon: 'handshake',
     label: 'Recicladores participantes',
     target: 0,
     unit: 'medido en piloto',
@@ -76,7 +76,7 @@ export default function Impact() {
               className="impact-card glass-card"
               style={{ transitionDelay: `${i * 0.1}s`, '--metric-color': m.color } as React.CSSProperties}
             >
-              <span className="impact-card__icon" role="img" aria-label={m.label}>{m.icon}</span>
+              <span className="impact-card__icon material-symbols-rounded" aria-label={m.label}>{m.icon}</span>
               <div className="impact-card__value">
                 <span className="impact-card__number">—</span>
               </div>

@@ -2,11 +2,11 @@ import { Link } from 'react-router-dom'
 
 export default function AppPreview() {
   const benefits = [
-    { icon: '📍', text: 'Encuentra estaciones activas' },
-    { icon: '⚡', text: 'Acumula puntos en tiempo real' },
-    { icon: '📋', text: 'Revisa tu historial' },
-    { icon: '🎟️', text: 'Canjea cupones únicos' },
-    { icon: '🔒', text: 'Controla tus datos y preferencias' },
+    { icon: 'location_on', text: 'Encuentra estaciones activas' },
+    { icon: 'bolt', text: 'Acumula puntos en tiempo real' },
+    { icon: 'receipt_long', text: 'Revisa tu historial' },
+    { icon: 'confirmation_number', text: 'Canjea cupones únicos' },
+    { icon: 'lock', text: 'Controla tus datos y preferencias' },
   ]
 
   return (
@@ -25,7 +25,10 @@ export default function AppPreview() {
               <div className="app-screen__frame">
                 <div className="app-screen__notch" />
                 <div className="app-screen__content">
-                  <div className="app-screen__header">🗺 Mapa</div>
+                  <div className="app-screen__header">
+                    <span className="material-symbols-rounded" style={{ fontSize: 16, marginRight: 4 }}>map</span>
+                    Mapa
+                  </div>
                   <div className="app-screen__body" style={{ background: 'linear-gradient(180deg, rgba(0,214,143,0.06), rgba(0,0,0,0))' }}>
                     <div className="app-mock-map">
                       <div className="app-mock-pin" style={{ top: '30%', left: '40%' }} />
@@ -43,7 +46,10 @@ export default function AppPreview() {
               <div className="app-screen__frame">
                 <div className="app-screen__notch" />
                 <div className="app-screen__content">
-                  <div className="app-screen__header">📷 Escáner</div>
+                  <div className="app-screen__header">
+                    <span className="material-symbols-rounded" style={{ fontSize: 16, marginRight: 4 }}>qr_code_scanner</span>
+                    Escáner
+                  </div>
                   <div className="app-screen__body">
                     <div className="app-mock-scanner">
                       <div className="app-mock-scanner__frame" />
@@ -60,7 +66,10 @@ export default function AppPreview() {
               <div className="app-screen__frame">
                 <div className="app-screen__notch" />
                 <div className="app-screen__content">
-                  <div className="app-screen__header">📊 Resumen</div>
+                  <div className="app-screen__header">
+                    <span className="material-symbols-rounded" style={{ fontSize: 16, marginRight: 4 }}>analytics</span>
+                    Resumen
+                  </div>
                   <div className="app-screen__body">
                     <div className="app-mock-stats">
                       <div className="app-mock-stat">
@@ -82,12 +91,24 @@ export default function AppPreview() {
               <div className="app-screen__frame">
                 <div className="app-screen__notch" />
                 <div className="app-screen__content">
-                  <div className="app-screen__header">🎁 Recompensas</div>
+                  <div className="app-screen__header">
+                    <span className="material-symbols-rounded" style={{ fontSize: 16, marginRight: 4 }}>card_giftcard</span>
+                    Recompensas
+                  </div>
                   <div className="app-screen__body">
                     <div className="app-mock-rewards">
-                      <div className="app-mock-reward-item">🎬 Cine</div>
-                      <div className="app-mock-reward-item">🛒 Super</div>
-                      <div className="app-mock-reward-item">📱 Recarga</div>
+                      <div className="app-mock-reward-item">
+                        <span className="material-symbols-rounded" style={{ fontSize: 14, marginRight: 4 }}>movie</span>
+                        Cine
+                      </div>
+                      <div className="app-mock-reward-item">
+                        <span className="material-symbols-rounded" style={{ fontSize: 14, marginRight: 4 }}>shopping_cart</span>
+                        Super
+                      </div>
+                      <div className="app-mock-reward-item">
+                        <span className="material-symbols-rounded" style={{ fontSize: 14, marginRight: 4 }}>smartphone</span>
+                        Recarga
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -101,7 +122,7 @@ export default function AppPreview() {
             <ul className="app-preview__benefits">
               {benefits.map((b) => (
                 <li key={b.text}>
-                  <span className="app-preview__benefit-icon">{b.icon}</span>
+                  <span className="app-preview__benefit-icon material-symbols-rounded">{b.icon}</span>
                   <span>{b.text}</span>
                 </li>
               ))}

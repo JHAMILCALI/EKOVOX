@@ -2,37 +2,37 @@ import { useEffect, useRef } from 'react'
 
 const categories = [
   {
-    icon: '🎬',
+    icon: 'movie',
     title: 'Entretenimiento',
     desc: 'Cine, eventos y experiencias.',
     gradient: 'linear-gradient(135deg, rgba(255,184,0,0.12), rgba(255,107,74,0.08))',
   },
   {
-    icon: '🍔',
+    icon: 'restaurant',
     title: 'Alimentos y bebidas',
     desc: 'Descuentos en tus lugares favoritos.',
     gradient: 'linear-gradient(135deg, rgba(255,107,74,0.12), rgba(255,184,0,0.06))',
   },
   {
-    icon: '🛒',
+    icon: 'shopping_cart',
     title: 'Supermercados',
     desc: 'Ahorra en tu compra semanal.',
     gradient: 'linear-gradient(135deg, rgba(0,214,143,0.12), rgba(255,184,0,0.06))',
   },
   {
-    icon: '💊',
+    icon: 'medication',
     title: 'Farmacias y bienestar',
     desc: 'Cuida tu salud con beneficios.',
     gradient: 'linear-gradient(135deg, rgba(0,214,143,0.10), rgba(0,150,200,0.08))',
   },
   {
-    icon: '📱',
+    icon: 'smartphone',
     title: 'Recargas o movilidad',
     desc: 'Conecta y muévete con tus puntos.',
     gradient: 'linear-gradient(135deg, rgba(100,140,255,0.12), rgba(0,214,143,0.06))',
   },
   {
-    icon: '🏆',
+    icon: 'emoji_events',
     title: 'Retos y premios especiales',
     desc: 'Compite y gana recompensas únicas.',
     gradient: 'linear-gradient(135deg, rgba(255,184,0,0.15), rgba(255,107,74,0.10))',
@@ -72,7 +72,7 @@ export default function Benefits() {
               style={{ transitionDelay: `${i * 0.1}s`, '--card-bg': c.gradient } as React.CSSProperties}
             >
               <div className="benefit-card__icon-wrap">
-                <span className="benefit-card__icon" role="img" aria-label={c.title}>{c.icon}</span>
+                <span className="benefit-card__icon material-symbols-rounded" aria-label={c.title}>{c.icon}</span>
               </div>
               <h3>{c.title}</h3>
               <p>{c.desc}</p>

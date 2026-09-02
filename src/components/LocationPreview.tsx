@@ -83,7 +83,10 @@ export default function LocationPreview() {
 
           {/* Suggest location form */}
           <div className="locations-suggest glass-card">
-            <h3>📍 Sugiere una ubicación</h3>
+            <h3 style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
+              <span className="material-symbols-rounded" style={{ color: 'var(--lime-500)', fontSize: 22 }}>location_on</span>
+              Sugiere una ubicación
+            </h3>
             <p>¿Dónde te gustaría encontrar una VoxStation?</p>
 
             {!submitted ? (

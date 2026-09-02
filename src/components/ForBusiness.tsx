@@ -2,22 +2,22 @@ import { useState } from 'react'
 
 const offers = [
   {
-    icon: '🏭',
+    icon: 'corporate_fare',
     title: 'Patrocina una VoxStation',
     desc: 'Tu marca visible en cada interacción de reciclaje.',
   },
   {
-    icon: '🎁',
+    icon: 'card_giftcard',
     title: 'Aporta recompensas',
     desc: 'Ofrece beneficios a usuarios activos y fideliza.',
   },
   {
-    icon: '📍',
+    icon: 'location_on',
     title: 'Aloja una estación',
     desc: 'Convierte tu espacio en un punto de economía circular.',
   },
   {
-    icon: '📈',
+    icon: 'trending_up',
     title: 'Mide una campaña de recuperación',
     desc: 'Datos reales de envases recuperados por tu marca.',
   },
@@ -79,7 +79,7 @@ export default function ForBusiness() {
         <div className="biz-offers-grid">
           {offers.map((o) => (
             <div key={o.title} className="biz-offer glass-card">
-              <span className="biz-offer__icon" role="img" aria-label={o.title}>{o.icon}</span>
+              <span className="biz-offer__icon material-symbols-rounded" aria-label={o.title}>{o.icon}</span>
               <h3>{o.title}</h3>
               <p>{o.desc}</p>
             </div>

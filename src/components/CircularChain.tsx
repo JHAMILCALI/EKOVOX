@@ -1,11 +1,11 @@
 export default function CircularChain() {
   const steps = [
-    { icon: '🏭', label: 'VoxStation', color: 'var(--ev-yellow)' },
-    { icon: '📋', label: 'Retiro registrado', color: 'var(--ev-coral)' },
-    { icon: '⚖️', label: 'Pesaje', color: 'var(--ev-green)' },
-    { icon: '🔍', label: 'Clasificación', color: 'var(--ev-yellow)' },
-    { icon: '🤝', label: 'Gestor / Reciclador', color: 'var(--ev-coral)' },
-    { icon: '♻️', label: 'Valorización', color: 'var(--ev-green)' },
+    { icon: 'corporate_fare', label: 'VoxStation', color: 'var(--ev-yellow)' },
+    { icon: 'receipt_long', label: 'Retiro registrado', color: 'var(--ev-coral)' },
+    { icon: 'scale', label: 'Pesaje', color: 'var(--ev-green)' },
+    { icon: 'search', label: 'Clasificación', color: 'var(--ev-yellow)' },
+    { icon: 'handshake', label: 'Gestor / Reciclador', color: 'var(--ev-coral)' },
+    { icon: 'recycling', label: 'Valorización', color: 'var(--ev-green)' },
   ]
 
   return (
@@ -20,7 +20,7 @@ export default function CircularChain() {
           {steps.map((s, i) => (
             <div key={s.label} className="chain-step" style={{ '--step-color': s.color } as React.CSSProperties}>
               <div className="chain-step__icon">
-                <span role="img" aria-label={s.label}>{s.icon}</span>
+                <span className="material-symbols-rounded" aria-label={s.label}>{s.icon}</span>
               </div>
               <span className="chain-step__label">{s.label}</span>
               {i < steps.length - 1 && (
