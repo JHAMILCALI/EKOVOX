@@ -133,32 +133,14 @@
   }
 }
 
-/* ─── Desenfoque focalizado SOLO detrás del teléfono ── */
-.demo-phone-backdrop-blur {
-  position: absolute;
-  top: -24px;
-  bottom: -24px;
-  left: -32px;
-  right: -32px;
-  border-radius: 68px;
-  backdrop-filter: blur(22px);
-  -webkit-backdrop-filter: blur(22px);
-  background: rgba(3, 43, 58, 0.45);
-  box-shadow: 0 0 60px 25px rgba(3, 43, 58, 0.45);
-  pointer-events: none;
-  z-index: 1;
-  animation: demoBlurFadeIn 0.4s ease forwards;
-}
-
-@keyframes demoBlurFadeIn {
-  from { opacity: 0; transform: scale(0.96); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-/* ─── Phone Frame ───────────────────────────────── */
+/* ─── Phone Frame (Fixed Size) ──────────────────── */
 .demo-phone {
   width: 375px;
-  height: min(812px, 84vh);
+  height: 812px;
+  min-width: 375px;
+  min-height: 812px;
+  max-width: 375px;
+  max-height: 812px;
   border-radius: 48px;
   background: #021a24;
   border: 4px solid #083747;
@@ -199,33 +181,6 @@
   border-radius: 44px;
   overflow: hidden;
   background: var(--navy-950);
-}
-
-/* ─── Mobile responsive: no bezel ───────────────── */
-@media (max-width: 500px) {
-  .demo-page {
-    padding: 0;
-  }
-
-  .demo-topbar {
-    display: none;
-  }
-
-  .demo-phone {
-    width: 100%;
-    height: 100dvh;
-    border-radius: 0;
-    border: none;
-    box-shadow: none;
-  }
-
-  .demo-phone__notch {
-    display: none;
-  }
-
-  .demo-phone__screen {
-    border-radius: 0;
-  }
 }
 
 /* ─── App Container ─────────────────────────────── */

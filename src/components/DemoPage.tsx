@@ -82,7 +82,6 @@ export default function DemoPage() {
   // Layout & Video Animation state
   const [phonePosition, setPhonePosition] = useState<'center' | 'right' | 'left'>('center')
   const [bgVideo, setBgVideo] = useState<string | null>(null)
-  const [bgBlur, setBgBlur] = useState<boolean>(false)
 
   // App state
   const [points, setPoints] = useState(150)
@@ -156,12 +155,11 @@ export default function DemoPage() {
 
   // ─── Scan Trigger Handler ────────────────────────
   // Al presionar el botón de escanear mueve el teléfono al borde derecho,
-  // reproduce 'demo_qr_escaner.mp4' en el background con desenfoque focalizado detrás del teléfono,
+  // reproduce 'demo_qr_escaner.mp4' en el background,
   // y espera 3 segundos para cambiar a la pantalla de cámara escáner QR.
   const handleStartScan = useCallback(() => {
     setPhonePosition('right')
     setBgVideo('/video/demo_qr_escaner.mp4')
-    setBgBlur(true)
 
     if (scanTransitionTimerRef.current) clearTimeout(scanTransitionTimerRef.current)
     scanTransitionTimerRef.current = setTimeout(() => {
@@ -174,7 +172,6 @@ export default function DemoPage() {
   const handleCloseScanner = useCallback(() => {
     if (scanTransitionTimerRef.current) clearTimeout(scanTransitionTimerRef.current)
     setBgVideo(null)
-    setBgBlur(false)
     setPhonePosition('center')
     goToTab('home')
   }, [goToTab])
@@ -189,7 +186,6 @@ export default function DemoPage() {
     setPoints(p => p + sessionPoints)
     setTotalDeposits(d => d + sessionAccepted)
     setBgVideo(null)
-    setBgBlur(false)
     setPhonePosition('center')
     goToTab('home')
     showToast(`¡Sesión terminada! Has sumado +${sessionPoints} VoxPuntos`)
@@ -200,12 +196,10 @@ export default function DemoPage() {
   useEffect(() => {
     if (screen === 'locations') {
       setBgVideo('/video/demo_map.mp4')
-      setBgBlur(false)
     } else if (screen !== 'scanner' && screen !== 'session') {
       // Si sale de ubicaciones y no está en el flujo de escaneo/sesión, apagar el video de mapa
       if (bgVideo === '/video/demo_map.mp4') {
         setBgVideo(null)
-        setBgBlur(false)
       }
     }
   }, [screen, bgVideo])
@@ -242,7 +236,6 @@ export default function DemoPage() {
     // Mueve la pantalla a la izquierda y transiciona video de fondo a botellas
     setPhonePosition('left')
     setBgVideo('/video/demo_qr_botellas.mp4')
-    setBgBlur(true)
 
     setSessionTime(0)
     setSessionAccepted(0)
@@ -265,7 +258,7 @@ export default function DemoPage() {
     }, 2500))
 
     depositTimeoutsRef.current.push(setTimeout(() => {
-      setSessionEvents(prev => [...prev.filter(e => e.type !== 'validating'), { type: 'accepted', message: 'Botella aceptada: +15 puntos', points: 15 }])
+      setSessionEvents(prev => [...prev.filter(e => e.type !== 'validating'), { type: 'rejected', message: 'La botella esta mal puesta', points: 0 }])
       setSessionAccepted(1)
       setSessionPoints(15)
     }, 4500))
@@ -287,7 +280,7 @@ export default function DemoPage() {
     }, 12000))
 
     depositTimeoutsRef.current.push(setTimeout(() => {
-      setSessionEvents(prev => [...prev.filter(e => e.type !== 'validating'), { type: 'rejected', message: 'La botella todavía tiene líquido', points: 0 }])
+      setSessionEvents(prev => [...prev.filter(e => e.type !== 'validating'), { type: 'accepted', message: 'Botella aceptada: +15 puntos', points: 15 }])
       setSessionRejected(1)
     }, 14000))
 
@@ -308,7 +301,6 @@ export default function DemoPage() {
       setPoints(p => p + 45)
       setTotalDeposits(d => d + 3)
       setBgVideo(null)
-      setBgBlur(false)
       setPhonePosition('center')
       goToTab('home')
       showToast('¡Sesión completada! Has reciclado 3 botellas (+45 VoxPuntos)')
@@ -1188,7 +1180,7 @@ export default function DemoPage() {
             className="demo-bg-video"
           />
         )}
-        <div className={`demo-bg-video__gradient ${!bgBlur ? 'demo-bg-video__gradient--light' : ''}`} />
+        <div className="demo-bg-video__gradient" />
       </div>
 
       <div className="demo-topbar">
@@ -1204,11 +1196,6 @@ export default function DemoPage() {
 
       {/* Phone Wrapper with Smooth Left / Right / Center Translation */}
       <div className={`demo-phone-wrapper demo-phone-wrapper--${phonePosition}`}>
-        {/* Desenfoque focalizado SOLO detrás del teléfono */}
-        {bgVideo && bgBlur && (
-          <div className="demo-phone-backdrop-blur" aria-hidden="true" />
-        )}
-
         <div className="demo-phone">
           <div className="demo-phone__notch" />
           <div className="demo-phone__screen">
